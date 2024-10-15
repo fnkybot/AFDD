@@ -67,6 +67,15 @@ store.mainContent({ mode: "narrow" });
               icon: 'fa fa-rocket',
             },
             {
+              name: 'App',
+              heading: true,
+            },
+            {
+              name: 'Draw ERD',
+              to: '/app',
+              icon: 'fa fa-shapes',
+            },
+            {
               name: 'Account',
               heading: true,
             },

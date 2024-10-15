@@ -57,9 +57,8 @@ onMounted(() => {
             <span class="smini-visible">
               <i class="fa fa-circle-notch text-primary"></i>
             </span>
-            <span class="smini-hide fs-5 tracking-wider">
-              OneUI
-              <span class="fw-normal">Vue</span>
+            <span class="fw-normal">
+              AFDD<span class="smini-hide fs-5 tracking-wider"> 0.1</span>
             </span>
           </Link>
           <!-- END Logo -->
