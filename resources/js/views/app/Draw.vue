@@ -23,7 +23,9 @@ const edges = ref(initialEdges)
 // our dark mode toggle flag
 const dark = ref(false)
 
-import CustomNode from './CustomNode.vue';
+import EntityNode from './EntityNode.vue';
+import AttributeNode from './AttributeNode.vue';
+import RelationshipNode from './RelationshipNode.vue';
 
 import SaveRestoreControls from './Controls.vue'
 
@@ -82,9 +84,31 @@ function updatePos() {
 /**
  * toObject transforms your current graph data to an easily persist-able object
  */
-function logToObject() {
+ function logToObject() {
   console.log(toObject())
+  const data = toObject(); // Zakładam, że toObject() zwraca obiekt, który chcesz zapisać.
+
+  // Konwertuj obiekt na JSON
+  const jsonString = JSON.stringify(data, null, 2); // Użyj null, 2 do formatowania w JSON
+
+  // Stwórz Blob z danymi JSON
+  const blob = new Blob([jsonString], { type: 'application/json' });
+
+  // Stwórz URL dla Bloba
+  const url = URL.createObjectURL(blob);
+
+  // Utwórz element a, aby umożliwić pobranie pliku
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'data.json'; // Ustal nazwę pliku
+  document.body.appendChild(a);
+  a.click(); // Kliknij link, aby rozpocząć pobieranie
+  document.body.removeChild(a); // Usuń link po pobraniu
+
+  // Zwolnij URL
+  URL.revokeObjectURL(url);
 }
+
 
 /**
  * Resets the current viewport transformation (zoom & pan)
@@ -119,6 +143,7 @@ function toggleDarkMode() {
     :nodes="nodes"
     :edges="edges"
     @connect="onConnect"
+    @update:node="updateNode"
     @nodeMouseEnter="onNodeMouseEnter"
     @nodeMouseLeave="onNodeMouseLeave"
     :class="{ dark }"
@@ -133,13 +158,27 @@ function toggleDarkMode() {
 
       <MiniMap />
 
-      <template #node-custom="customNodeProps">
-      <CustomNode v-bind="customNodeProps" />
+      <template #node-entityType="customNodeProps">
+        <EntityNode
+          v-bind="customNodeProps"
+          :id="customNodeProps.id"
+        />
       </template>
 
-      <template #node-custom1="customNodeProps">
-      <CustomNode v-bind="customNodeProps" />
+      <template #node-attributeType="customNodeProps">
+        <AttributeNode
+          v-bind="customNodeProps"
+          :id="customNodeProps.id"
+        />
       </template>
+
+      <template #node-relationshipType="customNodeProps">
+        <RelationshipNode
+          v-bind="customNodeProps"
+          :id="customNodeProps.id"
+        />
+      </template>
+
 
       <Controls position="top-left">
         <ControlButton title="Reset Transform" @click="resetTransform">
@@ -160,13 +199,6 @@ function toggleDarkMode() {
         </ControlButton>
       </Controls>
     </VueFlow>
-    <!-- <div class="row items-push">
-      <div class="col-sm-6 col-xl-4">
-        <BaseBlock title="Title" class="h-100 mb-0" content-class="fs-sm">
-          <p>Content..</p>
-        </BaseBlock>
-      </div>
-    </div> -->
   </div>
 </template>
 

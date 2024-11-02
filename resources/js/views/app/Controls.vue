@@ -18,12 +18,39 @@ function onRestore() {
   }
 }
 
-function onAdd() {
+function onAddEntityNode() {
   const id = nodes.value.length + 1
 
   const newNode = {
-    id: `random_node-${id}`,
-    label: `Node ${id}`,
+    id: `entitity_node-${id}`,
+    type: `entityType`,
+    label: ``,
+    position: { x: Math.random() * dimensions.value.width, y: Math.random() * dimensions.value.height },
+  }
+
+  addNodes([newNode])
+}
+
+function onAddAttributeNode() {
+  const id = nodes.value.length + 1
+
+  const newNode = {
+    id: `attribute_node-${id}`,
+    type: `attributeType`,
+    label: ``,
+    position: { x: Math.random() * dimensions.value.width, y: Math.random() * dimensions.value.height },
+  }
+
+  addNodes([newNode])
+}
+
+function onAddRelationshipNode() {
+  const id = nodes.value.length + 1
+
+  const newNode = {
+    id: `relationship_node-${id}`,
+    type: `relationshipType`,
+    label: ``,
     position: { x: Math.random() * dimensions.value.width, y: Math.random() * dimensions.value.height },
   }
 
@@ -35,13 +62,13 @@ function onAdd() {
   <Panel position="top-right">
     <div class="buttons">
 
-      <button title="add random node" @click="onAdd">
+      <button title="add entity node" @click="onAddEntityNode">
         <Icon name="eclipse" />
       </button>
-      <button title="add random node" @click="onAdd">
+      <button title="add attribute node" @click="onAddAttributeNode">
         <Icon name="rectangle" />
       </button>
-      <button title="add random node" @click="onAdd">
+      <button title="add relationship node" @click="onAddRelationshipNode">
         <Icon name="diamond" />
       </button>
       <button title="save graph" @click="onSave">
