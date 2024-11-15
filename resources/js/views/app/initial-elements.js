@@ -1,42 +1,17 @@
 import { MarkerType } from '@vue-flow/core'
 
-export const initialNodes = [
-  // {
-  //   id: '1',
-  //   type: 'input',
-  //   data: { label: 'Node 1' },
-  //   position: { x: 250, y: 0 },
-  //   class: 'light',
-  // },
-  // {
-  //   id: '2',
-  //   type: 'output',
-  //   data: { label: 'Node 2' },
-  //   position: { x: 100, y: 100 },
-  //   class: 'light',
-  // },
-  // {
-  //   id: '3',
-  //   data: { label: 'Node 3' },
-  //   position: { x: 400, y: 100 },
-  //   class: 'light',
-  // },
-  // {
-  //   id: '4',
-  //   data: { label: 'Node 4' },
-  //   position: { x: 150, y: 200 },
-  //   class: 'light',
-  // },
-  // {
-  //   id: '5',
-  //   type: 'output',
-  //   data: { label: 'Node 5' },
-  //   position: { x: 300, y: 300 },
-  //   class: 'light',
-  // },
+export const initialEdges = [
+  {
+    id: '10-11',
+    source: '10',
+    target: '11',
+    animated: true,
+    updatable: true,
+  },
+
 ]
 
-export const initialEdges = [
+export const initialNodes = [
   // {
   //   id: 'e1-2',
   //   source: '1',
@@ -67,19 +42,19 @@ export const initialEdges = [
   //   label: 'smoothstep-edge',
   // },
   {
-    id: '10',
+    id: 'e0',
     type: 'entityType',
     position: { x: 250, y: 5 },
     data: { label: ''},
   },
   {
-    id: '11',
+    id: 'a0',
     type: 'attributeType',
     position: { x: 500, y: 5 },
     data: { label: '' },
   },
   {
-    id: '12',
+    id: 'r0',
     type: 'relationshipType',
     position: { x: 750, y: 5 },
     data: { label: '' },

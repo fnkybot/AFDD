@@ -26,11 +26,26 @@ function updateLabel(value) {
   localLabel.value = value;
   onSomeEvent(value);
 }
+
+const handlePositions = [
+  Position.Top,
+  Position.Bottom,
+  Position.Left,
+  Position.Right,
+];
+
 </script>
 
 <template>
+
   <div style="padding: 10px; background-color: white; border: 1px solid #ccc; border-radius: 90%; text-align: center;">
-    <Handle type="target" :position="Position.Top" />
+    <Handle
+      v-for="position in handlePositions"
+      :id="`${position}-handle`"
+      :key="position"
+      :position="position"
+    />
+
     <input
       type="text"
       v-model="localLabel"
@@ -38,6 +53,6 @@ function updateLabel(value) {
       placeholder="Attribute name..."
       style="outline: none; background-color: white; border: none; padding: 24px 16px; border-radius: 90%; width: 100%; text-align: center;"
     />
-    <Handle type="source" :position="Position.Bottom" />
+
   </div>
 </template>

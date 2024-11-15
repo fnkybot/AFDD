@@ -1,9 +1,10 @@
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { VueFlow, useVueFlow } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
-import { ControlButton, Controls } from '@vue-flow/controls'
+import { ControlButton, Controls, } from '@vue-flow/controls'
+import EditBox from './EditBox.vue'
 import { MiniMap } from '@vue-flow/minimap'
 import { initialEdges, initialNodes } from './initial-elements.js'
 import Icon from './Icon.vue'
@@ -14,11 +15,24 @@ import Icon from './Icon.vue'
  * 2. a set of event-hooks to listen to VueFlow events (like `onInit`, `onNodeDragStop`, `onConnect`, etc)
  * 3. the internal state of the VueFlow instance (like `nodes`, `edges`, `viewport`, etc)
  */
-const { onInit, onNodeDragStop, onConnect, addEdges, setViewport, toObject } = useVueFlow()
-
+const { onInit, onNodeDragStop, onConnect, addEdges, updateEdge, setViewport, toObject, removeEdges } = useVueFlow()
+const bgColor = ref('#eeeeee')
 const nodes = ref(initialNodes)
 
 const edges = ref(initialEdges)
+const selectedEdges = ref([]);
+
+function onEdgeUpdateStart(edge) {
+  console.log('start update', edge)
+}
+
+function onEdgeUpdateEnd(edge) {
+  console.log('end update', edge)
+}
+
+function onEdgeUpdate({ edge, connection }) {
+  updateEdge(edge, connection)
+}
 
 // our dark mode toggle flag
 const dark = ref(false)
@@ -58,10 +72,29 @@ onNodeDragStop(({ event, nodes, node }) => {
  *
  * You can add additional properties to your new edge (like a type or label) or block the creation altogether by not calling `addEdges`
  */
-onConnect((connection) => {
-  this.edges.push({ ...connection, id: `e${connection.source}-${connection.target}` });
-  addEdges(connection)
+onConnect((params) => {
+  //edges.value.push({ ...params,  type: 'smoothstep' });
+
+  const exists = edges.value.some(
+        (edge) =>
+          edge.source === params.source &&
+          edge.sourceHandle === params.sourceHandle &&
+          edge.target === params.target &&
+          edge.targetHandle === params.targetHandle
+      );
+
+  // Dodaj nowe połączenie tylko, jeśli jeszcze nie istnieje
+  if (!exists) {
+    const uniqueId = `edge-${params.source}-${params.sourceHandle}-${params.target}-${params.targetHandle}`;
+    edges.value.push({ id: uniqueId, ...params, type: 'smoothstep' });
+  }
+
+  return { nodes, edges, onConnect };
+
+  //this.edges.push({ ...connection, id: `e${connection.source}-${connection.target}` });
+  //addEdges(connection)
 })
+
 
 /**
  * To update a node or multiple nodes, you can
@@ -142,7 +175,13 @@ function toggleDarkMode() {
     <VueFlow
     :nodes="nodes"
     :edges="edges"
+    :fit-view="true"
+    :allow-duplicate-edges="false"
+
+    @edge-update="onEdgeUpdate"
     @connect="onConnect"
+    @edge-update-start="onEdgeUpdateStart"
+    @edge-update-end="onEdgeUpdateEnd"
     @update:node="updateNode"
     @nodeMouseEnter="onNodeMouseEnter"
     @nodeMouseLeave="onNodeMouseLeave"
@@ -155,6 +194,8 @@ function toggleDarkMode() {
       <Background pattern-color="#aaa" :gap="16" />
 
       <SaveRestoreControls />
+
+      <EditBox />
 
       <MiniMap />
 
@@ -180,6 +221,8 @@ function toggleDarkMode() {
       </template>
 
 
+
+
       <Controls position="top-left">
         <ControlButton title="Reset Transform" @click="resetTransform">
           <Icon name="reset" />
@@ -198,6 +241,10 @@ function toggleDarkMode() {
           <Icon name="log" />
         </ControlButton>
       </Controls>
+
+
+
+
     </VueFlow>
   </div>
 </template>
@@ -230,9 +277,65 @@ body,
   color: #2c3e50;
 }
 
+
 .vue-flow__minimap {
   transform: scale(75%);
   transform-origin: bottom right;
+}
+
+.vue-flow__panel {
+    background-color:#2d3748;
+    color:#fff;
+    border-radius:8px;
+    padding:8px;
+    display:flex;
+    flex-direction:row;
+    gap:8px
+}
+
+.vue-flow__panel .field {
+    display:flex;
+    gap:8px;
+    align-items:center
+}
+
+.vue-flow__panel label {
+    display:blocK
+}
+
+.vue-flow__panel input {
+    padding:2px;
+    border-radius:5px
+}
+
+.vue-flow__panel .buttons {
+    display:flex;
+    gap:8px
+}
+
+.vue-flow__panel button {
+    border:none;
+    cursor:pointer;
+    background-color:#4a5568;
+    border-radius:8px;
+    border:none !important;
+    box-shadow:0 0 10px #0000004d;
+    fill: white;
+
+    display:flex;
+    align-items:center;
+    justify-content:center
+}
+
+.vue-flow__panel button:hover {
+    background-color:#2563eb;
+    transition:background-color .2s
+}
+
+.vue-flow__panel button svg {
+    width:100%;
+    height:100%;
+    color:white;
 }
 
 .basic-flow.dark {
