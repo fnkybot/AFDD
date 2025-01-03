@@ -1,174 +1,151 @@
-<script setup></script>
+<script setup>
+import { useTemplateStore } from "@/stores/template";
+
+// Main store
+const store = useTemplateStore();
+</script>
 
 <template>
-  <Head title="Welcome to your app" />
+  <Head title="Database Design Application" />
 
-  <!-- Hero -->
-  <div class="bg-body-extra-light">
-    <div class="content content-full text-center">
-      <div class="row justify-content-center py-8">
-        <div class="col-lg-9">
-          <div class="d-flex align-items-center justify-content-center gap-3">
-            <i class="fab fa-3x fa-laravel" style="color: #f72c1f"></i>
-            +
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 500 500"
-              class="d-inline-block"
-              style="width: 44px; height: 44px"
+  <div>
+    <!-- Hero -->
+    <div id="one-vue-hero" class="bg-body-extra-light">
+      <div class="content content-full">
+        <div class="row g-0 justify-content-center text-center">
+          <div class="col-md-10 pt-7 pb-9">
+            <div
+              class="d-inline-flex align-items-center space-x-1 fs-sm badge bg-body text-dark mb-2 p-2"
             >
-              <rect width="500" height="500" fill="url(#a)" rx="250" />
-              <path fill="#fff" d="M184 165H95l86 86-86 86h89l86-86-86-86Z" />
-              <path
-                fill="#fff"
-                d="M318.5 165h-89l86 86-86 86h89l86-86-86-86Z"
-              />
-              <defs>
-                <linearGradient
-                  id="a"
-                  x1="35"
-                  x2="632.5"
-                  y1="377.5"
-                  y2="65"
-                  gradientUnits="userSpaceOnUse"
+              <span>🔥</span>
+              <span>Your tool for designing and managing database structures</span>
+            </div>
+            <h1 class="h1 fw-black mb-3">
+              Simplifying Database Design and ERD Creation
+            </h1>
+            <p class="fs-5 fw-medium text-muted mb-4 mx-xl-8">
+              Our application makes it easy to create and modify Entity Relationship Diagrams (ERD), visualize database structures, and streamline the database design process. Built with modern tools for developers and database architects.
+            </p>
+            <div>
+                <Link
+                href="/dashboard"
+                class="btn btn-primary py-2 px-3 m-1"
+                v-click-ripple
                 >
-                  <stop stop-color="#934EE7" />
-                  <stop offset="1" stop-color="#7270EC" />
-                </linearGradient>
-              </defs>
-            </svg>
-            +
-            <i class="fab fa-3x fa-vuejs" style="color: #3fb27f"></i>
-            +
-            <i class="fa fa-2x text-primary fa-circle-notch"></i>
-          </div>
-          <h1 class="fw-black mt-3 mb-2">
-            Welcome to your brand new Laravel project!
-          </h1>
-          <p class="fs-lg fw-medium text-muted mb-4">
-            It uses Laravel 11, Inertia.js, Vue.js and OneUI Vue Edition. It
-            comes packed with authentication features out of the box, so feel
-            free to
-            <Link href="/register">create an account</Link> and
-            <Link href="/login">log in</Link> to your dashboard.
-          </p>
-          <div class="d-flex justify-content-center gap-2">
-            <Link href="/preview" class="btn btn-lg btn-primary" v-click-ripple>
-              Preview all demo pages
-              <i class="fa fa-fw fa-arrow-right ms-1 opacity-50"></i>
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- END Hero -->
+                  <i class="fa fa-fw fa-desktop opacity-50 me-1"></i> Start Designing
+                </Link>
+                <Link
+                href="/about"
+                class="btn btn-secondary py-2 px-3 m-1"
+                v-click-ripple
+                >
+                  About Project
+                </Link>
 
-  <!-- Features -->
-  <div id="one-vue-features" class="bg-body-light">
-    <div class="content content-full">
-      <div class="py-5">
-        <div class="row mb-5">
-          <div class="col-md-6">
-            <h2 class="h1 fw-black mb-2">
-              Sophisticated
-              <span class="fw-normal">Features</span>
-            </h2>
-            <p class="fs-lg fw-medium text-muted mb-0">
-              The Laravel version of OneUI Vue Edition comes packed with amazing
-              features out of the box.
-            </p>
-          </div>
-          <div
-            class="col-md-6 d-none d-md-flex align-items-md-center justify-content-md-end"
-          >
-            <p class="h1 fw-bold text-body-bg-dark mb-0">Carefully Crafted.</p>
+            </div>
           </div>
         </div>
-        <div class="row g-6">
-          <div class="col-sm-6">
-            <!-- Laravel 11 -->
-            <div class="item item-rounded bg-body-extra-light my-4">
-              <i class="fab fa-2x fa-laravel" style="color: #f72c1f"></i>
+      </div>
+    </div>
+
+    <!-- Hero After -->
+    <div id="one-vue-hero-after" class="bg-body-light">
+      <div class="content content-full">
+        <div class="px-lg-8 text-center">
+          <BaseBlock
+            fx-shadow
+            class="overflow-hidden"
+            content-class="p-2"
+            style="margin-top: -200px"
+          >
+            <img
+              class="img-fluid rounded-1"
+              src="/assets/media/various/hero-promo.png"
+              alt="Hero Promo Light Dashboard"
+            />
+          </BaseBlock>
+        </div>
+        <div class="row py-5">
+          <div class="col-6 col-md-3">
+            <div class="item item-rounded my-4 text-flat bg-flat-lighter">
+              <i class="fa fa-fw fa-2x fa-database"></i>
             </div>
-            <h4 class="mb-2">Laravel 11</h4>
-            <p class="text-muted mb-0">
-              The popular PHP framework, powers this application. It brings
-              enhanced performance, improved security features, and streamlined
-              development processes, ensuring your project is built on a robust
-              foundation.
+            <h4 class="mb-2">Database Design</h4>
+            <p class="text-muted">
+              Easily create, manage, and visualize database structures and relationships.
             </p>
-            <!-- END Laravel 11 -->
           </div>
-          <div class="col-sm-6">
-            <!-- Inertia.js -->
-            <div class="item item-rounded bg-body-extra-light my-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 500 500"
-                class="d-inline-block"
-                style="width: 40px; height: 40px"
-              >
-                <rect width="500" height="500" fill="url(#a)" rx="250" />
-                <path fill="#fff" d="M184 165H95l86 86-86 86h89l86-86-86-86Z" />
-                <path
-                  fill="#fff"
-                  d="M318.5 165h-89l86 86-86 86h89l86-86-86-86Z"
-                />
-                <defs>
-                  <linearGradient
-                    id="a"
-                    x1="35"
-                    x2="632.5"
-                    y1="377.5"
-                    y2="65"
-                    gradientUnits="userSpaceOnUse"
-                  >
-                    <stop stop-color="#934EE7" />
-                    <stop offset="1" stop-color="#7270EC" />
-                  </linearGradient>
-                </defs>
-              </svg>
+          <div class="col-6 col-md-3">
+            <div class="item item-rounded my-4 text-success bg-success-light">
+              <i class="fa fa-fw fa-2x fa-users"></i>
             </div>
-            <h4 class="mb-2">Inertia.js</h4>
-            <p class="text-muted mb-0">
-              It seamlessly connects your Laravel backend with your Vue.js
-              frontend, allowing you to build modern single-page applications
-              without the complexity of a traditional SPA.
+            <h4 class="mb-2">Collaborative Work</h4>
+            <p class="text-muted">
+              Share and collaborate with your team on the design process in real-time.
             </p>
-            <!-- END Inertia.js -->
           </div>
-          <div class="col-sm-6">
-            <!-- OneUI Vue Edition -->
-            <div class="item item-rounded bg-body-extra-light my-4">
-              <i class="fa fa-2x fa-circle-notch text-primary"></i>
+          <div class="col-6 col-md-3">
+            <div class="item item-rounded my-4 text-warning bg-warning-light">
+              <i class="fa fa-fw fa-2x fa-cogs"></i>
             </div>
-            <h4 class="mb-2">OneUI Vue Edition</h4>
-            <p class="text-muted mb-0">
-              One super flexible UI framework for web developers and founders
-              who value their time. Built with Bootstrap 5 and Vue.js 3. It now
-              comes with a brand new dark mode.
+            <h4 class="mb-2">Auto-Generate SQL</h4>
+            <p class="text-muted">
+              Automatically generate SQL queries based on your ERD for easier database creation.
             </p>
-            <!-- END OneUI Vue Edition -->
           </div>
-          <div class="col-sm-6">
-            <!-- Authentication -->
-            <div class="item item-rounded bg-body-extra-light my-4">
-              <i class="fa fa-2x fa-lock text-danger"></i>
+          <div class="col-6 col-md-3">
+            <div class="item item-rounded my-4 text-primary bg-primary-light">
+              <i class="fa fa-fw fa-2x fa-cloud"></i>
             </div>
-            <h4 class="mb-2">Authentication</h4>
-            <p class="text-muted mb-0">
-              Built-in authentication features based on Laravel Breeze starter
-              kit are integrated, including login, registration, password reset,
-              and email verification features.
+            <h4 class="mb-2">Cloud Integration</h4>
+            <p class="text-muted">
+              Sync and store your designs in the cloud for access anytime, anywhere.
             </p>
-            <!-- END Authentication -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Call To Action -->
+    <div id="one-vue-call-to-action" class="bg-body-extra-light">
+      <div class="content content-full">
+        <div class="pt-5">
+          <div class="row mb-5">
+            <div class="col-md-6">
+              <h2 class="h1 fw-black mb-2">
+                Crafted with
+                <i class="fa fa-fw fa-heart text-city"></i> by
+                <a class="link-fx" href="">fnky</a>
+              </h2>
+
+              <p class="fs-lg fw-medium text-muted mb-2 ">
+                We used the best toolkits and libraries, built by passionate people, to recreate our database design application from scratch.
+              </p>
+              <div class="mb-0">
+                <Link
+                href="/dashboard"
+                class="btn btn-primary py-2 px-3 m-1"
+                v-click-ripple
+                >
+                  <i class="fa fa-fw fa-desktop opacity-50 me-1"></i> Start Designing
+                </Link>
+                <Link
+                href="/about"
+                class="btn btn-secondary py-2 px-3 m-1"
+                v-click-ripple
+                >
+                  About Project
+                </Link>
+              </div>
+
+            </div>
+            <div
+              class="col-md-6 d-none d-md-flex align-items-md-center justify-content-md-end"
+            >
+              <p class="h1 fw-bold text-body-bg-dark mb-0">Get Inspired.</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <!-- END Features -->
 </template>

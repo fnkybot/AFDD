@@ -4,7 +4,6 @@ import { createApp, h } from "vue";
 import { createInertiaApp, Link, Head } from "@inertiajs/vue3";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createPinia } from "pinia";
-
 // Main layouts
 import LayoutAuthenticated from "@/layouts/Authenticated.vue";
 import LayoutGuestLanding from "@/layouts/GuestLanding.vue";

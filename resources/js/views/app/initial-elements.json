@@ -1,0 +1,72 @@
+[
+  {
+    "id": "Customer",
+    "type": "PDMNode",
+    "position": {
+        "x": 100,
+        "y": 100
+    },
+    "data": {
+        "label": "Customer",
+        "fields": [
+            {
+                "name": "name",
+                "type": "VARCHAR",
+                "keyType": ""
+            },
+            {
+                "name": "id",
+                "type": "VARCHAR",
+                "keyType": "PK"
+            }
+        ]
+    }
+},
+{
+    "id": "Project",
+    "type": "PDMNode",
+    "position": {
+        "x": 400,
+        "y": 300
+    },
+    "data": {
+        "label": "Project",
+        "fields": [
+            {
+                "name": "name",
+                "type": "VARCHAR",
+                "keyType": ""
+            },
+            {
+                "name": "id",
+                "type": "VARCHAR",
+                "keyType": "PK"
+            }
+        ]
+    }
+},
+{
+    "id": "orders",
+    "type": "PDMNode",
+    "position": {
+        "x": 700,
+        "y": 500
+    },
+    "data": {
+        "label": "orders",
+        "fields": [
+            {
+                "name": "Project_id",
+                "type": "VARCHAR",
+                "keyType": ""
+            },
+            {
+                "name": "Customer_id",
+                "type": "VARCHAR",
+                "keyType": ""
+            }
+        ]
+    }
+}
+
+]

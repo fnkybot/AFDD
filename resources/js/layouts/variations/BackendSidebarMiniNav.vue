@@ -84,8 +84,8 @@ router.on("start", () => {
               <i class="fa fa-circle-notch text-primary"></i>
             </span>
             <span class="smini-hide fs-5 tracking-wider">
-              OneUI
-              <span class="fw-normal">Vue</span>
+              AFDD
+              <span class="fw-light fs-xs">Application for Database Design</span>
             </span>
           </Link>
           <!-- END Logo -->

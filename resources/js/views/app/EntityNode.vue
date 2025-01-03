@@ -1,31 +1,12 @@
 <script setup>
-import { defineProps, defineEmits, watch, ref } from 'vue';
+import { defineProps} from 'vue';
 import { Position, Handle, useVueFlow } from '@vue-flow/core';
 
 const props = defineProps(['label', 'id']);
+
 const instance = useVueFlow()
-const localLabel = ref(props.label);
+const node = instance.findNode(props.id)
 
-watch(() => props.label, (newLabel) => {
-  localLabel.value = newLabel;
-});
-
-function onSomeEvent(newLabel) {
-  const node = instance.findNode(props.id)
-  if (node) {
-    node.data = {
-      ...node.data,
-      label: newLabel,
-    };
-  } else {
-    console.error("Node not found!");
-  }
-}
-
-function updateLabel(value) {
-  localLabel.value = value;
-  onSomeEvent(value);
-}
 
 const handlePositions = [
   Position.Top,
@@ -37,20 +18,41 @@ const handlePositions = [
 </script>
 
 <template>
-  <div style="padding: 10px; background-color: white; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
+  <div
+    :style="{
+      width: '200px',
+      height: '80px',
+      padding: '10px',
+      backgroundColor: node.data.bgColor ? node.data.bgColor : '#ffffff',
+      border: '1px solid #ccc',
+      borderRadius: '4px',
+      textAlign: 'center'}">
+
     <Handle
       v-for="position in handlePositions"
-      :id="`${position}-handle`"
+      :id="`${position}-${id}`"
       :key="position"
       :position="position"
     />
-    <input
-      type="text"
-      v-model="localLabel"
-      @input="updateLabel(localLabel)"
-      placeholder="Entity name..."
-      style="outline: none; background-color: white; border: none; padding: 4px; border-radius: 4px; width: 100%; text-align: center;"
-    />
 
+    <div
+      :style="{
+        whiteSpace: 'normal',
+        overflowWrap: 'break-word',
+        wordBreak: 'break-word',
+        height: '100%',
+        outline: 'none',
+        border: 'none',
+        padding: '22px 10px',
+        borderRadius: '90%',
+        display: 'flex',
+        flexDirection: 'column',
+        textAlign: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textDecoration: node.data.isPrimaryKey ? 'underline' : 'none'
+      }">
+      {{ node.data.label }}
+    </div>
   </div>
 </template>

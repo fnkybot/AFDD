@@ -39,11 +39,12 @@ const submit = () => {
         <div class="p-4 p-xl-5 flex-grow-1 d-flex align-items-center">
           <div class="w-100">
             <Link href="/" class="link-fx fw-semibold fs-2 text-white">
-              OneUI <span class="fw-normal">Vue</span>
+              AFDD
+              <span class="fw-light fs-xs">Application for Database Design</span>
             </Link>
             <p class="text-white-75 me-xl-8 mt-2">
-              Welcome to your amazing app. Feel free to login and get access to
-              your dashboard.
+              Welcome to our amazing app. Feel free to login and get access to
+              dashboard.
             </p>
           </div>
         </div>
@@ -81,7 +82,7 @@ const submit = () => {
       >
         <div class="p-3 w-100 d-lg-none text-center">
           <Link href="/" class="link-fx fw-semibold fs-3 text-dark">
-            OneUI <span class="fw-normal">Vue</span>
+            AFDD
           </Link>
         </div>
         <div class="p-4 w-100 flex-grow-1 d-flex align-items-center">

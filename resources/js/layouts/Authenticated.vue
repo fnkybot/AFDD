@@ -76,6 +76,16 @@ store.mainContent({ mode: "narrow" });
               icon: 'fa fa-shapes',
             },
             {
+              name: 'Transform to PDM',
+              to: '/pdm',
+              icon: 'fa fa-shapes',
+            },
+            {
+              name: 'Generate SQL Code',
+              to: '/sql',
+              icon: 'fa fa-shapes',
+            },
+            {
               name: 'Account',
               heading: true,
             },

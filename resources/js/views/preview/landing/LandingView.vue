@@ -1086,7 +1086,7 @@ const store = useTemplateStore();
           <h2 class="h1 fw-black mb-2">
             Crafted with
             <i class="fa fa-fw fa-heart text-city"></i> by
-            <a class="link-fx" href="https://pixelcave.com">pixelcave</a>
+            <a class="link-fx" href="">fnky</a>
           </h2>
           <p class="fs-lg fw-medium text-muted mb-4">
             Passionate web design and development with over 20,000 customers

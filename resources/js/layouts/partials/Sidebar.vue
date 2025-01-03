@@ -58,7 +58,7 @@ onMounted(() => {
               <i class="fa fa-circle-notch text-primary"></i>
             </span>
             <span class="fw-normal">
-              AFDD<span class="smini-hide fs-5 tracking-wider"> 0.1</span>
+              AFDD<span class="smini-hide fs-5 tracking-wider"> 1.0</span>
             </span>
           </Link>
           <!-- END Logo -->

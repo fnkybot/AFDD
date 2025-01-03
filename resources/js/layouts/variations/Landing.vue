@@ -27,8 +27,8 @@ store.mainContent({ mode: "boxed" });
       <div class="d-flex align-items-center">
         <!-- Logo -->
         <Link href="/" class="fw-bold fs-lg text-dual me-2">
-          OneUI
-          <span class="fw-medium">Vue</span>
+          AFDD
+          <span class="fw-light fs-xs">Application for Database Design</span>
         </Link>
         <!-- END Logo -->
 

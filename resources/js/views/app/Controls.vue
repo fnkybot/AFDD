@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from 'vue'
 import { Panel, useVueFlow } from '@vue-flow/core'
 import Icon from './Icon.vue'
 
@@ -6,8 +7,67 @@ const flowKey = 'vue-flow--save-restore'
 
 const { nodes, addNodes, dimensions, toObject, fromObject } = useVueFlow()
 
+const newNodes = ref([{}]);
+const newEdges = ref([{}]);
+
+const props = defineProps(['onUpdateGraph']);
+
+
 function onSave() {
-  localStorage.setItem(flowKey, JSON.stringify(toObject()))
+
+  const data = toObject();
+  // Konwertuj obiekt na JSON
+  const jsonString = JSON.stringify(data, null, 2); // Użyj null, 2 do formatowania w JSON
+
+  // Stwórz Blob z danymi JSON
+  const blob = new Blob([jsonString], { type: 'application/json' });
+
+  // Stwórz URL dla Bloba
+  const url = URL.createObjectURL(blob);
+
+  // Utwórz element a, aby umożliwić pobranie pliku
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'data.json'; // Ustal nazwę pliku
+  document.body.appendChild(a);
+  a.click(); // Kliknij link, aby rozpocząć pobieranie
+  document.body.removeChild(a); // Usuń link po pobraniu
+
+  // Zwolnij URL
+  URL.revokeObjectURL(url);
+}
+
+async function onUpload() {
+  try {
+    // Wyświetlenie okna dialogowego do wyboru pliku
+    const [fileHandle] = await window.showOpenFilePicker({
+      types: [
+        {
+          description: 'JSON Files',
+          accept: { 'application/json': ['.json'] },
+        },
+      ],
+      multiple: false,
+    });
+
+    // Odczytanie zawartości pliku
+    const file = await fileHandle.getFile();
+    const text = await file.text();
+
+    // Parsowanie JSON i aktualizacja danych grafu
+    const data = JSON.parse(text);
+    if (data.nodes && data.edges) {
+      newNodes.value = data.nodes;
+      newEdges.value = data.edges;
+    } else {
+      alert('Invalid graph data.');
+    }
+  } catch (err) {
+    console.error('Error loading file:', err);
+    alert('Failed to load file.');
+  }
+
+  props.onUpdateGraph(newNodes.value, newEdges.value);
 }
 
 function onRestore() {
@@ -25,6 +85,7 @@ function onAddEntityNode() {
     id: `e${id}`,
     type: `entityType`,
     label: ``,
+    bgColor: `#ffffff`,
     position: { x: Math.random() * dimensions.value.width, y: Math.random() * dimensions.value.height },
   }
 
@@ -38,6 +99,7 @@ function onAddAttributeNode() {
     id: `a${id}`,
     type: `attributeType`,
     label: ``,
+    bgColor: `#ffffff`,
     position: { x: Math.random() * dimensions.value.width, y: Math.random() * dimensions.value.height },
   }
 
@@ -51,6 +113,7 @@ function onAddRelationshipNode() {
     id: `r${id}`,
     type: `relationshipType`,
     label: ``,
+    bgColor: `#ffffff`,
     position: { x: Math.random() * dimensions.value.width, y: Math.random() * dimensions.value.height },
   }
 
@@ -74,6 +137,12 @@ function onAddRelationshipNode() {
       <button title="save graph" @click="onSave">
         <Icon name="save" />
       </button>
+      <button title="upload graph" @click="onUpload" >
+      <Icon name="upload" />
+      </button>
+      <!-- <button title="upload graph" @click="onUpload">
+        <Icon name="upload" />
+      </button> -->
       <button title="restore graph" @click="onRestore">
         <Icon name="restore" />
       </button>

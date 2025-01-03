@@ -1,13 +1,13 @@
-
 <script setup>
 import { ref, computed, onBeforeUnmount } from 'vue'
 import { VueFlow, useVueFlow } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
 import { ControlButton, Controls, } from '@vue-flow/controls'
 import EditBox from './EditBox.vue'
-import EditEdge from './EditEdge.vue'
 import { MiniMap } from '@vue-flow/minimap'
-import { initialEdges, initialNodes } from './initial-elements.js'
+// import { initialPDMNodes } from './initial-elements.js'
+import initialPDMNodes from './initial-elements.json'
+
 import Icon from './Icon.vue'
 
 /**
@@ -16,183 +16,104 @@ import Icon from './Icon.vue'
  * 2. a set of event-hooks to listen to VueFlow events (like `onInit`, `onNodeDragStop`, `onConnect`, etc)
  * 3. the internal state of the VueFlow instance (like `nodes`, `edges`, `viewport`, etc)
  */
-const { onInit, onNodeDragStop, onConnect, addEdges, setEdges, updateEdge, setViewport, toObject, onEdgesChange, onNodesChange } = useVueFlow()
+const { onInit, onNodeDragStop, onConnect, addEdges, updateEdge, setNodes, setViewport, toObject } = useVueFlow()
 const bgColor = ref('#eeeeee')
-const defaultEdgeOptions = {
-  type: 'step', // Twoja domyślna klasa
-  // class: 'default-edge-class', // Twoja domyślna klasa
-}
 
-const nodes = ref(initialNodes)
+const loading = ref(false);
+const nodes = ref()
+const edges = ref()
 
-const edges = ref(initialEdges)
-const selectedEdges = ref([]);
 
-const updateGraph = (newNodes, newEdges) => {
-  nodes.value = newNodes || nodes.value;
-  edges.value = newEdges || edges.value;
+const tables = ref(null);
+const errorMessage = ref("");
+
+// Pobierz dane PDM z API
+const fetchPDMTables = async () => {
+  try {
+    const response = await fetch("/api/export-pdm");
+    if (!response.ok) {
+      throw new Error("Failed to fetch PDM tables.");
+    }
+    const data = await response.json();
+    tables.value = data;
+  } catch (error) {
+    errorMessage.value = error.message;
+    console.error("Error fetching PDM tables:", error);
+  }
 };
 
-function onEdgeUpdateStart(edge) {
-  console.log('start update', edge)
+// Zapisz JSON jako plik
+const saveJSONToFile = () => {
+  if (!tables.value) {
+    alert("No data available to save.");
+    return;
+  }
+
+  const dataStr = JSON.stringify(tables.value, null, 2);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  // Utwórz tymczasowy element <a>, aby pobrać plik
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "pdm_tables.json";
+  a.click();
+
+  // Zwolnij pamięć zajmowaną przez URL
+  URL.revokeObjectURL(url);
+};
+
+// Funkcja do obsługi importu pliku
+async function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) {
+    alert('Nie wybrano pliku');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('erdFile', file);
+
+  loading.value = true;
+
+  try {
+    const response = await axios.post('/api/upload-erd', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+
+    updateVueFlow(response.data);
+  } catch (error) {
+    alert('Błąd podczas przesyłania pliku: ' + (error.response?.data?.error || error.message));
+  } finally {
+    loading.value = false;
+  }
 }
 
-function onEdgeUpdateEnd(edge) {
-  console.log('end update', edge)
+// Aktualizacja VueFlow
+function updateVueFlow(pdmData) {
+  nodes.value = pdmData.nodes;
+  edges.value = pdmData.edges || [];
+  setNodes(pdmData.nodes);
 }
-
-function onEdgeUpdate({ edge, connection }) {
-  updateEdge(edge, connection)
-}
-
-
-
-function redirectToPDM() {
-  const diagramData = { nodes: nodes, edges: edges, };
-  diagramStore.setDiagramData(diagramData);
-  window.location.href = "/pdm";
-}
-
-
-onEdgesChange((changes) => {
-  changes.forEach((change) => {
-    if (change.type === 'remove') {
-      const index = edges.value.findIndex((edge) => edge.id === change.id);
-      if (index !== -1) {
-        edges.value.splice(index, 1);
-        console.log('Deleted edge:', change.id);
-      }
-    }
-  });
-});
-
-onNodesChange((changes) => {
-  changes.forEach((change) => {
-    if (change.type === 'remove') {
-      const index = nodes.value.findIndex((node) => node.id === change.id);
-      if (index !== -1) {
-        nodes.value.splice(index, 1);
-        console.log('Deleted node:', change.id);
-      }
-    }
-  });
-});
-
 
 // our dark mode toggle flag
 const dark = ref(false)
 
-import EntityNode from './EntityNode.vue';
-import AttributeNode from './AttributeNode.vue';
-import RelationshipNode from './RelationshipNode.vue';
+import PDMNode from './PDMNode.vue';
 
 import SaveRestoreControls from './Controls.vue'
 
-/**
- * This is a Vue Flow event-hook which can be listened to from anywhere you call the composable, instead of only on the main component
- * Any event that is available as `@event-name` on the VueFlow component is also available as `onEventName` on the composable and vice versa
- *
- * onInit is called when the VueFlow viewport is initialized
- */
+
 onInit((vueFlowInstance) => {
   // instance is the same as the return of `useVueFlow`
   vueFlowInstance.fitView()
+
 })
 
-/**
- * onNodeDragStop is called when a node is done being dragged
- *
- * Node drag events provide you with:
- * 1. the event object
- * 2. the nodes array (if multiple nodes are dragged)
- * 3. the node that initiated the drag
- * 4. any intersections with other nodes
- */
+
 onNodeDragStop(({ event, nodes, node }) => {
   console.log('Node Drag Stop', { event, nodes, node })
 })
-
-/**
- * onConnect is called when a new connection is created.
- *
- * You can add additional properties to your new edge (like a type or label) or block the creation altogether by not calling `addEdges`
- */
- onConnect((params) => {
-  // Sprawdź, czy już istnieje krawędź z tego samego źródła i uchwytu źródłowego
-  const sourceExists = edges.value.some(
-    (edge) =>
-      edge.source === params.source &&
-      edge.sourceHandle === params.sourceHandle
-  );
-
-  // Sprawdź, czy już istnieje krawędź do tego samego celu i uchwytu docelowego
-  const targetExists = edges.value.some(
-    (edge) =>
-      edge.target === params.target &&
-      edge.targetHandle === params.targetHandle
-  );
-
-  const sameExists = params.source === params.target
-
-
-  // Dodaj nowe połączenie tylko, jeśli nie istnieje już krawędź z tego uchwytu źródłowego ani do tego uchwytu docelowego
-  if (!sourceExists && !targetExists && !sameExists) {
-    const uniqueId = `edge-${Date.now()}-${Math.random()}-${params.source}-${params.sourceHandle}-${params.target}-${params.targetHandle}`;
-    // setEdges((eds) => [
-    //   ...eds,
-    //   { id: uniqueId, ...params, type: 'step' },
-    // ]);
-    edges.value.push({ id: uniqueId, ...params, type: 'step' });
-  } else {
-    // Informuj użytkownika o niemożności utworzenia połączenia
-    console.log('More than 1 connection.');
-  }
-
-
-  return { nodes, edges, onConnect };
-
-  //this.edges.push({ ...connection, id: `e${connection.source}-${connection.target}` });
-  //addEdges(connection)
-})
-
-// onEdgesDelete((deletedEdges) => {
-//   deletedEdges.forEach((deletedEdge) => {
-//     const index = edges.value.findIndex((e) => e.id === deletedEdge.id);
-//     if (index !== -1) {
-//       edges.value.splice(index, 1);
-//       console.log('Deleted:', deletedEdge.id);
-//     }
-//   });
-// });
-
-// onNodeClick((node) => {
-//   setSelectedNode(node) // Ustawia kliknięty węzeł jako wybrany
-// })
-
-/**
- * To update a node or multiple nodes, you can
- * 1. Mutate the node objects *if* you're using `v-model`
- * 2. Use the `updateNode` method (from `useVueFlow`) to update the node(s)
- * 3. Create a new array of nodes and pass it to the `nodes` ref
- */
-function updatePos() {
-  nodes.value = nodes.value.map((node) => {
-    return {
-      ...node,
-      position: {
-        x: Math.random() * 400,
-        y: Math.random() * 400,
-      },
-    }
-  })
-}
-
-/**
- * toObject transforms your current graph data to an easily persist-able object
- */
- function logToObject() {
-  console.log(toObject())
-}
 
 
 /**
@@ -206,11 +127,6 @@ function toggleDarkMode() {
   dark.value = !dark.value
 }
 
- // Reaktywna wersja flowData
- const flowData = computed(() => JSON.stringify({ nodes: nodes.value, edges: edges.value }, null, 2));
-
-// Tekst wyświetlany w polu
-const displayFlowData = ref(flowData.value);
 
 function isActive(path) {
   return window.location.pathname === path;}
@@ -234,7 +150,7 @@ function isActive(path) {
         </li>
 
         <li class="nav-item me-1">
-          <a class="nav-link" :class="{ active: isActive('/pdm') }" @click.prevent="redirectToPDM"  >
+          <a class="nav-link" :class="{ active: isActive('/pdm') }" href="/pdm" >
             <i class="fa fa-fw fa-pencil-alt me-1"></i> Transform to Physical Data Model
           </a>
         </li>
@@ -250,13 +166,20 @@ function isActive(path) {
 
 
   <div class="content" style="overflow: auto; height: 70vh">
+    <button class="btn btn-primary" @click="fetchPDMTables">Fetch PDM Tables</button>
+            <button class="btn btn-success ms-2" @click="saveJSONToFile">Save as JSON</button>
+    <div class="file-upload">
+      <label v-if="!loading" for="file-input">Import ERD JSON</label>
+      <input v-if="!loading" id="file-input" type="file" @change="handleFileUpload" />
+      <p v-if="loading"><div class="col-6 col-md-3"><i class="fa fa-3x fa-cog fa-spin"></i></div></p>
+    </div>
 
     <VueFlow
     :nodes="nodes"
     :edges="edges"
     :fit-view="true"
     :allow-duplicate-edges="false"
-    :default-edge-options="defaultEdgeOptions"
+
     @edge-update="onEdgeUpdate"
     @connect="onConnect"
     @edge-update-start="onEdgeUpdateStart"
@@ -274,27 +197,12 @@ function isActive(path) {
 
       <SaveRestoreControls :onUpdateGraph="updateGraph" />
 
-      <EditBox />
-      <EditEdge />
+      <!-- <EditBox /> -->
 
       <MiniMap />
 
-      <template #node-entityType="customNodeProps">
-        <EntityNode
-          v-bind="customNodeProps"
-          :id="customNodeProps.id"
-        />
-      </template>
-
-      <template #node-attributeType="customNodeProps">
-        <AttributeNode
-          v-bind="customNodeProps"
-          :id="customNodeProps.id"
-        />
-      </template>
-
-      <template #node-relationshipType="customNodeProps">
-        <RelationshipNode
+      <template #node-PDMNode="customNodeProps">
+        <PDMNode
           v-bind="customNodeProps"
           :id="customNodeProps.id"
         />
@@ -321,13 +229,6 @@ function isActive(path) {
       </Controls>
 
     </VueFlow>
-    <!-- <div class="json-display" style="height: 30vh; overflow: auto;  margin-top: 20px; padding: 10px;  border: 1px solid #ccc; border-radius: 8px;">
-    <h5>Flow Data:</h5>
-    <pre>{{ flowData }}</pre>
-    </div> -->
-    <div class="block-rounded block"><div class="block-header block-header-default"><h3 class="block-title"> JSON Graph Code<!----></h3><!----></div><div class="block-content"><!----><pre><code class="hljs css">
-      {{ flowData }}
-    </code></pre></div><!----></div>
   </div>
 
 </template>
@@ -473,5 +374,20 @@ body,
 .basic-flow.dark .vue-flow__edge-text {
     fill:#fffffb
 }
+
+.file-upload {
+  margin-bottom: 20px;
+}
+
+.file-upload label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.file-upload input[type="file"] {
+  display: block;
+}
+
 
 </style>

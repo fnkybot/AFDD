@@ -1,31 +1,12 @@
 <script setup>
-import { defineProps, defineEmits, watch, ref } from 'vue';
+import { defineProps} from 'vue';
 import { Position, Handle, useVueFlow } from '@vue-flow/core';
 
 const props = defineProps(['label', 'id']);
+
 const instance = useVueFlow()
-const localLabel = ref(props.label);
+const node = instance.findNode(props.id)
 
-watch(() => props.label, (newLabel) => {
-  localLabel.value = newLabel;
-});
-
-function onSomeEvent(newLabel) {
-  const node = instance.findNode(props.id)
-  if (node) {
-    node.data = {
-      ...node.data,
-      label: newLabel,
-    };
-  } else {
-    console.error("Node not found!");
-  }
-}
-
-function updateLabel(value) {
-  localLabel.value = value;
-  onSomeEvent(value);
-}
 
 const handlePositions = [
   Position.Top,
@@ -38,18 +19,39 @@ const handlePositions = [
 <template>
   <Handle
       v-for="position in handlePositions"
-      :id="`${position}-handle`"
+      :id="`${position}-${id}`"
       :key="position"
       :position="position"
-    />
+  />
   <div
-    style="width: 200px; height: 100px; background-color: white; border: 1px solid #fff; position: relative; display: flex; align-items: center; justify-content: center; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);">
-    <input
-      type="text"
-      v-model="localLabel"
-      @input="updateLabel(localLabel)"
-      placeholder="Relationship name..."
-      style="outline: none; background-color: white; border: none; padding: 4px; text-align: center; width: 80%; transform: rotate(0deg);"
-    />
+  :style="{
+    width: '200px',
+    height: '100px',
+    padding: '10px',
+    backgroundColor: node.data.bgColor ? node.data.bgColor : '#ffffff',
+    border: '1px solid #ccc',
+    position: 'relative',
+    textAlign: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'}">
+
+    <div
+      :style="{
+        whiteSpace: 'normal',
+        overflowWrap: 'break-word',
+        wordBreak: 'break-word',
+        height: '100%',
+        outline: 'none',
+        border: 'none',
+        padding: '22px 10px',
+        borderRadius: '90%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        textDecoration: node.data.isPrimaryKey ? 'underline' : 'none'
+      }">
+      {{ node.data.label }}
+    </div>
   </div>
 </template>
