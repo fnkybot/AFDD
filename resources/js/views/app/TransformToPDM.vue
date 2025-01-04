@@ -167,6 +167,13 @@ function resetTransform() {
   setViewport({ x: 0, y: 0, zoom: 1 })
 }
 
+/**
+ * toObject transforms your current graph data to an easily persist-able object
+ */
+ function logToObject() {
+  console.log(toObject())
+}
+
 function toggleDarkMode() {
   dark.value = !dark.value
 }
@@ -213,9 +220,9 @@ function isActive(path) {
 
     <div class="file-upload ">
       <BaseBlock title="Import JSON File" class="h-100 mb-3" content-class="fs-sm">
-        <input v-if="!loading" class="mb-2" id="file-input" type="file" @change="handleFileUpload" />
+        <input class="mb-2" type="file" @change="handleFileUpload" />
         <p v-if="!loading" class="text-danger">This file had to be graph from <em><a class="text-danger" href="/app">previous module</a></em>.</p>
-        <p v-if="loading"><div class="col-6 col-md-3"><i class="fa fa-3x fa-cog fa-spin"></i></div></p>
+        <div class=""><p v-if="loading"><i class="fa fa-3x fa-cog fa-spin"></i></p></div>
       </BaseBlock>
     </div>
     <div class="file-upload">
@@ -266,10 +273,10 @@ function isActive(path) {
           <Icon name="update" />
         </ControlButton>
 
-        <ControlButton title="Toggle Dark Mode" @click="toggleDarkMode">
+        <!-- <ControlButton title="Toggle Dark Mode" @click="toggleDarkMode">
           <Icon v-if="dark" name="sun" />
           <Icon v-else name="moon" />
-        </ControlButton>
+        </ControlButton> -->
 
         <ControlButton title="Log `toObject`" @click="logToObject">
           <Icon name="log" />

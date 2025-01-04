@@ -307,10 +307,10 @@ function isActive(path) {
           <Icon name="update" />
         </ControlButton>
 
-        <ControlButton title="Toggle Dark Mode" @click="toggleDarkMode">
+        <!-- <ControlButton title="Toggle Dark Mode" @click="toggleDarkMode">
           <Icon v-if="dark" name="sun" />
           <Icon v-else name="moon" />
-        </ControlButton>
+        </ControlButton> -->
 
         <ControlButton title="Log `toObject`" @click="logToObject">
           <Icon name="log" />

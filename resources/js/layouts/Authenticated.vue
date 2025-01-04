@@ -50,7 +50,7 @@ store.mainContent({ mode: "narrow" });
     <!-- Using the available v-slot, we can override the default Side Overlay content from layouts/partials/SideOvelay.vue -->
     <template #side-overlay-content>
       <div class="content-side">
-        <p class="fs-sm">Side Overlay content..</p>
+        <p class="fs-sm">Nothing here...</p>
       </div>
     </template>
     <!-- END Side Overlay Content -->

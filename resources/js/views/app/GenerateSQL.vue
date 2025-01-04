@@ -95,9 +95,9 @@ const handleFileUpload = async (event) => {
   </BasePageHeading>
 
   <div class="content">
-    <div class="row items-push">
+    <div class="row">
       <div class="col-sm-6 col-xl-12">
-        <BaseBlock title="Import JSON File" class="h-100 mb-3" content-class="fs-sm">
+        <BaseBlock title="Import JSON File" class="mb-3" content-class="fs-sm">
           <input type="file" class="mb-2" accept=".json" @change="handleFileUpload" />
           <p v-if="!loading" class="text-danger">This file had to be tables from <em><a class="text-danger" href="/pdm">previous module</a></em>.</p>
           <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
