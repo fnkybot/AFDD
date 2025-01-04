@@ -66,6 +66,8 @@ class SQLController extends Controller
             '*' => 'array', // Walidacja dla dowolnej struktury
         ]);
 
+        \Log::info('Received request:', $request->all());
+
         $rawTables = $request->all();
 
         try {

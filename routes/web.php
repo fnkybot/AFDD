@@ -31,8 +31,9 @@ Route::get('/dashboard', function () {
 // Dashboard - Profile (Authenticated)
 Route::middleware('auth')->group(function () {
     Route::get('/app', [AppController::class, 'edit'])->name('app.edit');
-    Route::get('/pdm', [PDMController::class, 'generatePDM'])->name('transform.to.physical'); // Strona do przekształcenia modelu
-    Route::post('/api/upload-erd', [PDMController::class, 'uploadERD']);
+    Route::get('/pdm', [PDMController::class, 'edit'])->name('pdm.edit'); // Strona do przekształcenia modelu
+    Route::post('/api/generate-pdm', [PDMController::class, 'generatePDM'])->name('transform.to.physical'); // Strona do przekształcenia modelu
+    Route::post('/api/upload-erd', [PDMController::class, 'uploadERD'])->name('api.upload.erd');
 
     Route::get('/api/export-pdm', [PDMController::class, 'exportPDM'])->name('api.export.pdm'); // Eksport tabel jako JSON
 

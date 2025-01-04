@@ -24,9 +24,7 @@ const defaultEdgeOptions = {
 }
 
 const nodes = ref(initialNodes)
-
 const edges = ref(initialEdges)
-const selectedEdges = ref([]);
 
 const updateGraph = (newNodes, newEdges) => {
   nodes.value = newNodes || nodes.value;
@@ -221,8 +219,8 @@ function isActive(path) {
   <Head title="App" />
 
   <BasePageHeading
-    title="App"
-    :subtitle="`Welcome ${$page.props.auth.user.name.split(' ')[0]}, everything looks good!`"
+    title="Draw ERD"
+    :subtitle="`Welcome ${$page.props.auth.user.name.split(' ')[0]}, here you can draw your ERD diagram in Chen notation!`"
   >
     <template #extra>
 
@@ -234,7 +232,8 @@ function isActive(path) {
         </li>
 
         <li class="nav-item me-1">
-          <a class="nav-link" :class="{ active: isActive('/pdm') }" @click.prevent="redirectToPDM"  >
+          <a class="nav-link" :class="{ active: isActive('/pdm') }" href="/pdm">
+            <!-- @click.prevent="redirectToPDM" -->
             <i class="fa fa-fw fa-pencil-alt me-1"></i> Transform to Physical Data Model
           </a>
         </li>
@@ -246,8 +245,6 @@ function isActive(path) {
       </ul>
     </template>
   </BasePageHeading>
-
-
 
   <div class="content" style="overflow: auto; height: 70vh">
 
@@ -359,7 +356,6 @@ body,
   text-align: center;
   color: #2c3e50;
 }
-
 
 .vue-flow__minimap {
   transform: scale(75%);

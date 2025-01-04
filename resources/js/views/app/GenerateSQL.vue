@@ -3,7 +3,6 @@ import { ref, onMounted } from "vue";
 import hljs from "highlight.js";
 import "highlight.js/styles/monokai.css"; // Możesz zmienić na inny styl, np. "github-dark.css"
 
-const uploadedFile = ref(null);
 const sqlCode = ref("");
 const errorMessage = ref("");
 
@@ -33,7 +32,6 @@ const handleFileUpload = async (event) => {
     reader.onload = async () => {
       try {
         const jsonData = JSON.parse(reader.result);
-
         // Pobierz token CSRF z meta tagu
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -68,11 +66,11 @@ const handleFileUpload = async (event) => {
 </script>
 
 <template>
-  <Head title="Dashboard" />
+  <Head title="Generate SQL" />
 
   <BasePageHeading
-    title="Dashboard"
-    :subtitle="`Welcome ${$page.props.auth.user.name.split(' ')[0]}, everything looks good!`"
+    title="Generate SQL"
+    :subtitle="`Welcome ${$page.props.auth.user.name.split(' ')[0]}, here you can generate SQL code from your physical model!`"
   >
     <template #extra>
       <ul class="nav nav-pills">
@@ -99,13 +97,14 @@ const handleFileUpload = async (event) => {
   <div class="content">
     <div class="row items-push">
       <div class="col-sm-6 col-xl-12">
-        <BaseBlock title="Import JSON File" class="h-100 mb-0" content-class="fs-sm">
-          <input type="file" accept=".json" @change="handleFileUpload" />
+        <BaseBlock title="Import JSON File" class="h-100 mb-3" content-class="fs-sm">
+          <input type="file" class="mb-2" accept=".json" @change="handleFileUpload" />
+          <p v-if="!loading" class="text-danger">This file had to be tables from <em><a class="text-danger" href="/pdm">previous module</a></em>.</p>
           <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
         </BaseBlock>
       </div>
 
-      <div class="col-sm-6 col-xl-12 mt-4">
+      <div class="col-sm-6 col-xl-12">
         <BaseBlock title="Generated SQL Code" class="h-100 mb-0" content-class="fs-sm">
           <pre v-if="sqlCode">
             <code class="sql">{{ sqlCode }}</code>

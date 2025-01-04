@@ -5,7 +5,7 @@ import Icon from './Icon.vue'
 
 const flowKey = 'vue-flow--save-restore'
 
-const { nodes, addNodes, dimensions, toObject, fromObject } = useVueFlow()
+const { nodes, edges, addNodes, dimensions, toObject, fromObject } = useVueFlow()
 
 const newNodes = ref([{}]);
 const newEdges = ref([{}]);
@@ -71,11 +71,7 @@ async function onUpload() {
 }
 
 function onRestore() {
-  const flow = JSON.parse(localStorage.getItem(flowKey))
-
-  if (flow) {
-    fromObject(flow)
-  }
+  if (nodes.value.length || edges.value.length ) props.onUpdateGraph([{}], [{}]);
 }
 
 function onAddEntityNode() {
@@ -143,8 +139,8 @@ function onAddRelationshipNode() {
       <!-- <button title="upload graph" @click="onUpload">
         <Icon name="upload" />
       </button> -->
-      <button title="restore graph" @click="onRestore">
-        <Icon name="restore" />
+      <button title="clear graph" @click="onRestore">
+        <Icon name="delete" />
       </button>
 
     </div>

@@ -17,32 +17,61 @@ import Icon from './Icon.vue'
  * 3. the internal state of the VueFlow instance (like `nodes`, `edges`, `viewport`, etc)
  */
 const { onInit, onNodeDragStop, onConnect, addEdges, updateEdge, setNodes, setViewport, toObject } = useVueFlow()
-const bgColor = ref('#eeeeee')
 
 const loading = ref(false);
-const nodes = ref()
-const edges = ref()
-
-
+const nodes = ref([]);
+const edges = ref([]);
 const tables = ref(null);
+
+const updateGraph = (newNodes, newEdges) => {
+  nodes.value = newNodes || nodes.value;
+  edges.value = newEdges || edges.value;
+};
+
+
 const errorMessage = ref("");
 
-// Pobierz dane PDM z API
-const fetchPDMTables = async () => {
+const fetchPDMTables = async (nodes, edges) => {
   try {
-    const response = await fetch("/api/export-pdm");
-    if (!response.ok) {
+    // Wysyłanie żądania POST do backendu
+    const response = await axios.post("/api/generate-pdm", {
+      projectData: {
+        nodes: nodes, // Przekazanie aktualnej wartości
+        edges: edges,
+      },
+    });
+
+    // Sprawdź odpowiedź
+    if (response.status === 200 && response.data) {
+      tables.value = response.data;
+      console.log("Fetched PDM tables:", response.data);
+    } else {
+      console.error("Invalid response:", response);
       throw new Error("Failed to fetch PDM tables.");
     }
-    const data = await response.json();
-    tables.value = data;
   } catch (error) {
-    errorMessage.value = error.message;
+    // Obsługa błędów
+    errorMessage.value =
+      error.response?.data?.error || "Error fetching PDM tables.";
     console.error("Error fetching PDM tables:", error);
   }
 };
 
-// Zapisz JSON jako plik
+// // Pobierz dane PDM z API
+// const fetchPDMTables = async () => {
+//   try {
+//     const response = await fetch("/api/export-pdm");
+//     if (!response.ok) {
+//       throw new Error("Failed to fetch PDM tables.");
+//     }
+//     const data = await response.json();
+//     tables.value = data;
+//   } catch (error) {
+//     errorMessage.value = error.message;
+//     console.error("Error fetching PDM tables:", error);
+//   }
+// };
+
 const saveJSONToFile = () => {
   if (!tables.value) {
     alert("No data available to save.");
@@ -66,28 +95,43 @@ const saveJSONToFile = () => {
 // Funkcja do obsługi importu pliku
 async function handleFileUpload(event) {
   const file = event.target.files[0];
+
   if (!file) {
-    alert('Nie wybrano pliku');
+    alert("Nie wybrano pliku");
     return;
   }
 
   const formData = new FormData();
-  formData.append('erdFile', file);
+  formData.append("erdFile", file);
 
+  // Zmienna loading (jeśli jeszcze nie istnieje)
   loading.value = true;
 
   try {
-    const response = await axios.post('/api/upload-erd', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+    const response = await axios.post("/api/upload-erd", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
 
-    updateVueFlow(response.data);
+    if (response.status === 200 && response.data) {
+      console.log("Plik przesłany pomyślnie:", response.data);
+      updateVueFlow(response.data.vueFlowData); // Funkcja aktualizująca Vue Flow
+      tables.value = response.data.pdmData;
+    } else {
+      console.error("Nieprawidłowa odpowiedź serwera:", response);
+      alert("Nie udało się przetworzyć pliku. Spróbuj ponownie.");
+    }
   } catch (error) {
-    alert('Błąd podczas przesyłania pliku: ' + (error.response?.data?.error || error.message));
+    const errorMessage =
+      error.response?.data?.error || "Błąd podczas przesyłania pliku.";
+    console.error("Błąd przesyłania pliku:", error);
+    alert(errorMessage);
   } finally {
     loading.value = false;
   }
 }
+
 
 // Aktualizacja VueFlow
 function updateVueFlow(pdmData) {
@@ -134,11 +178,11 @@ function isActive(path) {
 </script>
 
 <template>
-  <Head title="App" />
+  <Head title="Transform to PDM" />
 
   <BasePageHeading
-    title="App"
-    :subtitle="`Welcome ${$page.props.auth.user.name.split(' ')[0]}, everything looks good!`"
+    title="Transform to PDM"
+    :subtitle="`Welcome ${$page.props.auth.user.name.split(' ')[0]}, here you can transform your logical model to physical model!`"
   >
     <template #extra>
 
@@ -166,12 +210,16 @@ function isActive(path) {
 
 
   <div class="content" style="overflow: auto; height: 70vh">
-    <button class="btn btn-primary" @click="fetchPDMTables">Fetch PDM Tables</button>
-            <button class="btn btn-success ms-2" @click="saveJSONToFile">Save as JSON</button>
+
+    <div class="file-upload ">
+      <BaseBlock title="Import JSON File" class="h-100 mb-3" content-class="fs-sm">
+        <input v-if="!loading" class="mb-2" id="file-input" type="file" @change="handleFileUpload" />
+        <p v-if="!loading" class="text-danger">This file had to be graph from <em><a class="text-danger" href="/app">previous module</a></em>.</p>
+        <p v-if="loading"><div class="col-6 col-md-3"><i class="fa fa-3x fa-cog fa-spin"></i></div></p>
+      </BaseBlock>
+    </div>
     <div class="file-upload">
-      <label v-if="!loading" for="file-input">Import ERD JSON</label>
-      <input v-if="!loading" id="file-input" type="file" @change="handleFileUpload" />
-      <p v-if="loading"><div class="col-6 col-md-3"><i class="fa fa-3x fa-cog fa-spin"></i></div></p>
+    <button v-if="tables" class="btn btn-alt-primary ms-2" @click="saveJSONToFile">Export tables</button>
     </div>
 
     <VueFlow
@@ -195,7 +243,7 @@ function isActive(path) {
     >
       <Background pattern-color="#aaa" :gap="16" />
 
-      <SaveRestoreControls :onUpdateGraph="updateGraph" />
+      <!-- <SaveRestoreControls :onUpdateGraph="updateGraph" /> -->
 
       <!-- <EditBox /> -->
 

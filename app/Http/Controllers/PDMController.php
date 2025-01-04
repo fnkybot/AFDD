@@ -45,16 +45,10 @@ class PDMController extends Controller
     public function exportPDM(Request $request)
     {
         // Pobierz dane z pliku project.json
-        $filePath = storage_path('app/project.json');
+        $projectData = $request->input('projectData');
 
-        if (!file_exists($filePath)) {
-            return response()->json(['error' => 'File project.json not found.'], 404);
-        }
-
-        $projectData = json_decode(file_get_contents($filePath), true);
-
-        if (!$projectData) {
-            return response()->json(['error' => 'Invalid JSON format in project.json.'], 400);
+        if (!$projectData || !is_array($projectData)) {
+            return response()->json(['error' => 'Invalid project data 0.'], 400);
         }
 
         // Generuj tabele PDM
@@ -64,22 +58,72 @@ class PDMController extends Controller
         return response()->json($tables, 200);
     }
 
+    public function generatePDM(Request $request)
+    {
+        $projectData = $request->input('projectData');
+
+        if (!$projectData || !is_array($projectData)) {
+            return response()->json(['error' => 'Invalid project data.'], 400);
+        }
+
+        if (!isset($projectData['nodes']) && !isset($projectData['edges'])) {
+            return response()->json(['error' => 'Invalid project data structure. Missing nodes or edges.'], 400);
+        }
+
+        \Log::info('Nodes:', $projectData['nodes']);
+
+
+        try {
+            // Tworzenie fizycznego modelu danych (PDM)
+            $tables = $this->buildPDM($projectData);
+
+            // Generowanie JSON kompatybilnego z VueFlow
+            $vueFlowData = $this->generateVueFlowJSON($tables);
+
+            if (empty($vueFlowData)) {
+                return response()->json(['error' => 'Generated PDM is empty.'], 400);
+            }
+
+            return response()->json($vueFlowData, 200);
+        } catch (\Exception $e) {
+            \Log::error('Error generating PDM', ['error' => $e->getMessage(), 'projectData' => $projectData]);
+            return response()->json(['error' => 'An error occurred while generating PDM.', 'details' => $e->getMessage()], 500);
+        }
+    }
+
+
 
     public function uploadERD(Request $request)
     {
-        // Walidacja pliku
-        $request->validate([
-            'erdFile' => 'required|file|mimes:json',
-        ]);
+        $erdData = null;
 
-        // Zapisz plik tymczasowo
-        $path = $request->file('erdFile')->store('temp');
+        if ($request->hasFile('erdFile')) {
+            // Obsługa przesłania pliku JSON
+            $request->validate([
+                'erdFile' => 'required|file|mimes:json',
+            ]);
 
-        // Wczytaj dane z pliku
-        $erdData = json_decode(Storage::get($path), true);
+            // Zapisz plik tymczasowo
+            $path = $request->file('erdFile')->store('temp');
 
-        if (!$erdData) {
-            return response()->json(['error' => 'Niepoprawny format JSON'], 400);
+            // Wczytaj dane z pliku
+            $erdData = json_decode(Storage::get($path), true);
+
+            // Usuń plik tymczasowy
+            Storage::delete($path);
+
+            if (!$erdData) {
+                return response()->json(['error' => 'Invalid JSON format in uploaded file.'], 400);
+            }
+        } elseif ($request->has('erdData')) {
+            // Obsługa przesłania danych JSON jako input
+            $erdData = $request->input('erdData');
+
+            if (!$erdData || !is_array($erdData)) {
+                return response()->json(['error' => 'Invalid ERD data provided.'], 400);
+            }
+        } else {
+            return response()->json(['error' => 'No valid ERD data provided.'], 400);
         }
 
         // Przetwarzanie ERD na PDM
@@ -88,44 +132,14 @@ class PDMController extends Controller
         // Konwersja do VueFlow JSON
         $vueFlowData = $this->generateVueFlowJSON($pdmData);
 
-        // Usuń plik tymczasowy
-        Storage::delete($path);
-
-        return response()->json($vueFlowData);
+        return response()->json([
+            'vueFlowData' => $vueFlowData,
+            'pdmData' => $pdmData,
+        ], 200);
     }
 
-    /**
-     * Convert project.json to PDM and export VueFlow-compatible JSON.
-     */
-    public function generatePDM(Request $request)
-    {
-        // Odczytaj plik project.json
-        $filePath = storage_path('app/project.json');
-        if (!file_exists($filePath)) {
-            return response()->json(['error' => 'File project.json not found.'], 404);
-        }
 
-        $projectData = json_decode(file_get_contents($filePath), true);
-        if (!$projectData) {
-            return response()->json(['error' => 'Invalid JSON format in project.json.'], 400);
-        }
 
-        // Tworzenie fizycznego modelu danych (PDM)
-        $tables = $this->buildPDM($projectData);
-
-        // Generowanie JSON kompatybilnego z VueFlow
-        $vueFlowData = $this->generateVueFlowJSON($tables);
-
-        // Zapisanie JSON jako pliku
-        $outputPath = storage_path('app/vueflow_pdm.json');
-        file_put_contents($outputPath, json_encode($vueFlowData, JSON_PRETTY_PRINT));
-
-        return Inertia::render('app/TransformToPDM', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-            'status' => session('status'),
-        ]);
-        //return response()->json(['message' => 'PDM JSON successfully generated.', 'path' => $outputPath]);
-    }
 
     /**
      * Build Physical Data Model (PDM) from project.json nodes and edges.
