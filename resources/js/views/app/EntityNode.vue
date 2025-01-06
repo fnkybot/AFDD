@@ -1,5 +1,4 @@
 <script setup>
-import { defineProps} from 'vue';
 import { Position, Handle, useVueFlow } from '@vue-flow/core';
 
 const props = defineProps(['label', 'id']);

@@ -17,6 +17,8 @@ import LayoutBackendBoxed from "@/layouts/variations/BackendBoxed.vue";
 import LayoutBackendMegaMenu from "@/layouts/variations/BackendMegaMenu.vue";
 import LayoutBackendSidebarMiniNav from "@/layouts/variations/BackendSidebarMiniNav.vue";
 
+
+import "@/../scss/oneui/themes/flat.scss";
 // Main Stylesheet
 import "@/../scss/main.scss";
 
@@ -24,7 +26,7 @@ import "@/../scss/main.scss";
 // Feel free to comment out any of them if you won't use them in your project
 import "@/../scss/oneui/themes/amethyst.scss";
 import "@/../scss/oneui/themes/city.scss";
-import "@/../scss/oneui/themes/flat.scss";
+
 import "@/../scss/oneui/themes/modern.scss";
 import "@/../scss/oneui/themes/smooth.scss";
 

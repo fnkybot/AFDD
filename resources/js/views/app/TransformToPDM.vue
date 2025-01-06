@@ -23,55 +23,6 @@ const nodes = ref([]);
 const edges = ref([]);
 const tables = ref(null);
 
-const updateGraph = (newNodes, newEdges) => {
-  nodes.value = newNodes || nodes.value;
-  edges.value = newEdges || edges.value;
-};
-
-
-const errorMessage = ref("");
-
-const fetchPDMTables = async (nodes, edges) => {
-  try {
-    // Wysyłanie żądania POST do backendu
-    const response = await axios.post("/api/generate-pdm", {
-      projectData: {
-        nodes: nodes, // Przekazanie aktualnej wartości
-        edges: edges,
-      },
-    });
-
-    // Sprawdź odpowiedź
-    if (response.status === 200 && response.data) {
-      tables.value = response.data;
-      console.log("Fetched PDM tables:", response.data);
-    } else {
-      console.error("Invalid response:", response);
-      throw new Error("Failed to fetch PDM tables.");
-    }
-  } catch (error) {
-    // Obsługa błędów
-    errorMessage.value =
-      error.response?.data?.error || "Error fetching PDM tables.";
-    console.error("Error fetching PDM tables:", error);
-  }
-};
-
-// // Pobierz dane PDM z API
-// const fetchPDMTables = async () => {
-//   try {
-//     const response = await fetch("/api/export-pdm");
-//     if (!response.ok) {
-//       throw new Error("Failed to fetch PDM tables.");
-//     }
-//     const data = await response.json();
-//     tables.value = data;
-//   } catch (error) {
-//     errorMessage.value = error.message;
-//     console.error("Error fetching PDM tables:", error);
-//   }
-// };
-
 const saveJSONToFile = () => {
   if (!tables.value) {
     alert("No data available to save.");
@@ -115,17 +66,17 @@ async function handleFileUpload(event) {
     });
 
     if (response.status === 200 && response.data) {
-      console.log("Plik przesłany pomyślnie:", response.data);
+
       updateVueFlow(response.data.vueFlowData); // Funkcja aktualizująca Vue Flow
       tables.value = response.data.pdmData;
     } else {
-      console.error("Nieprawidłowa odpowiedź serwera:", response);
-      alert("Nie udało się przetworzyć pliku. Spróbuj ponownie.");
+      console.error("Bad response:", response);
+      alert("Error at transforming file. Try again.");
     }
   } catch (error) {
     const errorMessage =
-      error.response?.data?.error || "Błąd podczas przesyłania pliku.";
-    console.error("Błąd przesyłania pliku:", error);
+      error.response?.data?.error || "Error at uploading file...";
+    console.error("Error at uploading file:", error);
     alert(errorMessage);
   } finally {
     loading.value = false;
@@ -323,7 +274,7 @@ body,
 }
 
 .vue-flow__panel {
-    background-color:#2d3748;
+    background-color:#303e44;
     color:#fff;
     border-radius:8px;
     padding:8px;
@@ -367,7 +318,7 @@ body,
 }
 
 .vue-flow__panel button:hover {
-    background-color:#2563eb;
+    background-color:#069fba;
     transition:background-color .2s
 }
 
@@ -378,7 +329,7 @@ body,
 }
 
 .basic-flow.dark {
-    background:#2d3748;
+    background:#303e44;
     color:#fffffb
 }
 
@@ -389,7 +340,7 @@ body,
 
 .basic-flow.dark .vue-flow__node.selected {
     background:#333;
-    box-shadow:0 0 0 2px #2563eb
+    box-shadow:0 0 0 2px #069fba;
 }
 
 .basic-flow .vue-flow__controls {

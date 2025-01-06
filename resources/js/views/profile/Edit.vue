@@ -17,7 +17,7 @@ defineProps({
   <Head title="Profile" />
 
   <!-- Hero -->
-  <BaseBackground image="/assets/media/photos/photo33@2x.jpg">
+  <BaseBackground image="/assets/media/photos/photo15@2x.jpg">
     <div class="bg-primary-dark-op">
       <div class="content content-full text-center">
         <div class="my-3">

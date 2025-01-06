@@ -37,62 +37,6 @@ class PDMController extends Controller
         return strtoupper(str_replace(' ', '_', $name));
     }
 
-    /**
-     * Export PDM tables as JSON.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function exportPDM(Request $request)
-    {
-        // Pobierz dane z pliku project.json
-        $projectData = $request->input('projectData');
-
-        if (!$projectData || !is_array($projectData)) {
-            return response()->json(['error' => 'Invalid project data 0.'], 400);
-        }
-
-        // Generuj tabele PDM
-        $tables = $this->buildPDM($projectData);
-
-        // Zwróć dane tabel w formacie JSON
-        return response()->json($tables, 200);
-    }
-
-    public function generatePDM(Request $request)
-    {
-        $projectData = $request->input('projectData');
-
-        if (!$projectData || !is_array($projectData)) {
-            return response()->json(['error' => 'Invalid project data.'], 400);
-        }
-
-        if (!isset($projectData['nodes']) && !isset($projectData['edges'])) {
-            return response()->json(['error' => 'Invalid project data structure. Missing nodes or edges.'], 400);
-        }
-
-        \Log::info('Nodes:', $projectData['nodes']);
-
-
-        try {
-            // Tworzenie fizycznego modelu danych (PDM)
-            $tables = $this->buildPDM($projectData);
-
-            // Generowanie JSON kompatybilnego z VueFlow
-            $vueFlowData = $this->generateVueFlowJSON($tables);
-
-            if (empty($vueFlowData)) {
-                return response()->json(['error' => 'Generated PDM is empty.'], 400);
-            }
-
-            return response()->json($vueFlowData, 200);
-        } catch (\Exception $e) {
-            \Log::error('Error generating PDM', ['error' => $e->getMessage(), 'projectData' => $projectData]);
-            return response()->json(['error' => 'An error occurred while generating PDM.', 'details' => $e->getMessage()], 500);
-        }
-    }
-
-
-
     public function uploadERD(Request $request)
     {
         $erdData = null;
@@ -115,13 +59,6 @@ class PDMController extends Controller
             if (!$erdData) {
                 return response()->json(['error' => 'Invalid JSON format in uploaded file.'], 400);
             }
-        } elseif ($request->has('erdData')) {
-            // Obsługa przesłania danych JSON jako input
-            $erdData = $request->input('erdData');
-
-            if (!$erdData || !is_array($erdData)) {
-                return response()->json(['error' => 'Invalid ERD data provided.'], 400);
-            }
         } else {
             return response()->json(['error' => 'No valid ERD data provided.'], 400);
         }
@@ -138,13 +75,10 @@ class PDMController extends Controller
         ], 200);
     }
 
-
-
-
     /**
-     * Build Physical Data Model (PDM) from project.json nodes and edges.
+     * Build Physical Data Model (PDM) from nodes and edges.
      */
-    private function buildPDM(array $projectData): array
+    private function buildPDM(array $projectData)
     {
         $nodes = $projectData['nodes'];
         $edges = $projectData['edges'];
@@ -164,20 +98,39 @@ class PDMController extends Controller
         // Przypisywanie atrybutów do tabel
         foreach ($nodes as $node) {
             if ($node['type'] === 'attributeType') {
+
+                \Log::info('Processing node:', $node);
+
                 $attributeName = $this->normalizeName($node['data']['label']);
                 $attribute = [
                     'name' => $attributeName,
-                    'type' => 'VARCHAR',
+                    'type' => $node['data']['nodeType'],
                     'primary' => $node['data']['isPrimaryKey'] ?? false
                 ];
 
+                \Log::info('Processing attribute:', $attribute);
+
                 // Znajdź tabelę, do której należy ten atrybut
                 foreach ($edges as $edge) {
-                    if ($edge['target'] === $node['id']) { // Atrybut jest połączony z encją
-                        $sourceNode = collect($nodes)->firstWhere('id', $edge['source']);
-                        if ($sourceNode && $sourceNode['type'] === 'entityType') {
-                            $tableName = $this->normalizeName($sourceNode['data']['label']);
-                            $tables[$tableName]['columns'][] = $attribute;
+
+                    \Log::info('Processing edge:', $edge);
+
+                    if ($edge['target'] === $node['id'] || $edge['source'] === $node['id']) { // Atrybut jest połączony z encją
+                        $relatedNodeId = $edge['target'] === $node['id'] ? $edge['source'] : $edge['target'];
+                        $relatedNode = collect($nodes)->firstWhere('id', $relatedNodeId);
+
+                        if ($relatedNode && $relatedNode['type'] === 'entityType') {
+                            $tableName = $this->normalizeName($relatedNode['data']['label']);
+
+                            // Upewnij się, że tabela istnieje w $tables
+                            if (!isset($tables[$tableName])) {
+                                $tables[$tableName] = ['name' => $tableName, 'columns' => []];
+                            }
+
+                            // Dodaj atrybut do kolumn tabeli
+                            if ($attribute['primary']) array_unshift($tables[$tableName]['columns'], $attribute); // Dodaj PK na początek
+                            else $tables[$tableName]['columns'][] = $attribute; // Dodaj normalną kolumnę na koniec
+
                         }
                     }
                 }
@@ -211,14 +164,14 @@ class PDMController extends Controller
                         'columns' => [
                             [
                                 'name' => $entityA . '_id',
-                                'type' => 'VARCHAR',
+                                'type' => 'INT',
                                 'primary' => false,
                                 'foreign_key' => true,
                                 'references' => $entityA . '(id)'
                             ],
                             [
                                 'name' => $entityB . '_id',
-                                'type' => 'VARCHAR',
+                                'type' => 'INT',
                                 'primary' => false,
                                 'foreign_key' => true,
                                 'references' => $entityB . '(id)'
@@ -243,7 +196,7 @@ class PDMController extends Controller
                         // Dodaj klucz obcy do tabeli target (wielu)
                         $tables[$targetTable]['columns'][] = [
                             'name' => $sourceTable . '_ID',
-                            'type' => 'VARCHAR',
+                            'type' => 'INT',
                             'primary' => false,
                             'foreign_key' => true,
                             'references' => $sourceTable . '(ID)'
@@ -253,11 +206,19 @@ class PDMController extends Controller
             }
         }
 
+        foreach ($tables as $tableName => $table) {
+            $primaryKeys = array_filter($table['columns'], function ($column) {
+                return $column['primary'] ?? false;
+            });
+
+            if (count($primaryKeys) > 1) return 0;
+
+            $columnNames = array_column($table['columns'], 'name');
+            if (count($columnNames) !== count(array_unique($columnNames))) return 0;
+        }
+
         return $tables;
     }
-
-
-
 
     /**
      * Generate VueFlow-compatible JSON from PDM.
@@ -313,7 +274,4 @@ class PDMController extends Controller
 
         return ['nodes' => $nodes, 'edges' => $edges];
     }
-
-
-
 }

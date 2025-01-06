@@ -363,7 +363,7 @@ body,
 }
 
 .vue-flow__panel {
-    background-color:#2d3748;
+    background-color:#303e44;
     color:#fff;
     border-radius:8px;
     padding:8px;
@@ -407,7 +407,7 @@ body,
 }
 
 .vue-flow__panel button:hover {
-    background-color:#2563eb;
+    background-color:#069fba;
     transition:background-color .2s
 }
 
@@ -418,7 +418,7 @@ body,
 }
 
 .basic-flow.dark {
-    background:#2d3748;
+    background:#303e44;
     color:#fffffb
 }
 
@@ -429,7 +429,7 @@ body,
 
 .basic-flow.dark .vue-flow__node.selected {
     background:#333;
-    box-shadow:0 0 0 2px #2563eb
+    box-shadow:0 0 0 2px #069fba;
 }
 
 .basic-flow .vue-flow__controls {

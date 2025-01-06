@@ -77,31 +77,32 @@ const store = useTemplateStore();
           </div>
           <div class="col-6 col-md-3">
             <div class="item item-rounded my-4 text-success bg-success-light">
-              <i class="fa fa-fw fa-2x fa-users"></i>
+              <i class="fa fa-fw fa-2x fa-diagram-project"></i>
             </div>
-            <h4 class="mb-2">Collaborative Work</h4>
+            <h4 class="mb-2">Interactive Diagrams</h4>
             <p class="text-muted">
-              Share and collaborate with your team on the design process in real-time.
+              Create amazing and interactive diagrams.
+            </p>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="item item-rounded my-4 text-white bg-primary">
+              <i class="fa fa-fw fa-2x fa-gear"></i>
+            </div>
+            <h4 class="mb-2">Transform to PDM</h4>
+            <p class="text-muted">
+              Once diagram is created transform it to physical model, represanting tables in database.
             </p>
           </div>
           <div class="col-6 col-md-3">
             <div class="item item-rounded my-4 text-warning bg-warning-light">
-              <i class="fa fa-fw fa-2x fa-cogs"></i>
+              <i class="fa fa-fw fa-2x fa-code"></i>
             </div>
             <h4 class="mb-2">Auto-Generate SQL</h4>
             <p class="text-muted">
-              Automatically generate SQL queries based on your ERD for easier database creation.
+              Automatically generate SQL queries based on your diagrams for easier database creation.
             </p>
           </div>
-          <div class="col-6 col-md-3">
-            <div class="item item-rounded my-4 text-primary bg-primary-light">
-              <i class="fa fa-fw fa-2x fa-cloud"></i>
-            </div>
-            <h4 class="mb-2">Cloud Integration</h4>
-            <p class="text-muted">
-              Sync and store your designs in the cloud for access anytime, anywhere.
-            </p>
-          </div>
+
         </div>
       </div>
     </div>
@@ -118,7 +119,7 @@ const store = useTemplateStore();
               </h2>
 
               <p class="fs-lg fw-medium text-muted mb-2 ">
-                We used the best toolkits and libraries, built by passionate people, to recreate our database design application from scratch.
+                Used the best toolkits and libraries, built by passionate for people, to make easier design databases from scratch.
               </p>
               <div class="mb-0">
                 <Link

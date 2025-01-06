@@ -8,7 +8,7 @@ const { onNodeClick, onEdgeClick, setNodes } = useVueFlow();
 const label = ref('');
 const bgColor = ref('#ffffff');
 const isPrimaryKey = ref(false); // Checkbox dla opcji bool
-const nodeType = ref('Text'); // Typ węzła, inicjalizacja jako 'Text'
+const nodeType = ref('VARCHAR(255)'); // Typ węzła, inicjalizacja jako 'Text'
 
 // Funkcja do zaktualizowania węzła
 const handleUpdate = () => {
@@ -42,7 +42,7 @@ onNodeClick(({ node }) => {
     label.value = node.data?.label || '';
     isPrimaryKey.value = node.data?.isPrimaryKey || false; // Ustawienie stanu checkboxa
     bgColor.value = node.data?.bgColor || '#ffffff';
-    nodeType.value = node.data?.nodeType || 'Text'; // Pobranie typu węzła
+    nodeType.value = node.data?.nodeType || 'VARCHAR(255)'; // Pobranie typu węzła
   }
 });
 
@@ -79,7 +79,7 @@ onEdgeClick(({ edge }) => {
           <input
             class="form-check-input"
             type="radio"
-            value="Number"
+            value="INT"
             v-model="nodeType"
             @change="handleUpdate"
           />
@@ -89,7 +89,7 @@ onEdgeClick(({ edge }) => {
           <input
             class="form-check-input"
             type="radio"
-            value="Text"
+            value="VARCHAR(255)"
             v-model="nodeType"
             @change="handleUpdate"
           />
@@ -99,7 +99,7 @@ onEdgeClick(({ edge }) => {
           <input
             class="form-check-input"
             type="radio"
-            value="Date"
+            value="DATE"
             v-model="nodeType"
             @change="handleUpdate"
           />
@@ -109,11 +109,11 @@ onEdgeClick(({ edge }) => {
           <input
             class="form-check-input"
             type="radio"
-            value="Byte"
+            value="BOOLEAN"
             v-model="nodeType"
             @change="handleUpdate"
           />
-          Byte
+          Boolean
         </label>
       </div>
     </div>
@@ -122,7 +122,7 @@ onEdgeClick(({ edge }) => {
 
 <style scoped>
 .vue-flow__panel {
-  background-color: #2d3748;
+  background-color: #303e44;
   color: white;
   border-radius: 8px;
   padding: 8px;

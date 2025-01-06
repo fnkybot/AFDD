@@ -103,7 +103,7 @@ onEdgeClick(({ edge }) => {
 
 <style scoped>
 .vue-flow__panel {
-  background-color: #2d3748;
+  background-color: #303e44;
   color: white;
   border-radius: 8px;
   padding: 8px;

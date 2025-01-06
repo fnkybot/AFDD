@@ -10,6 +10,9 @@ export const initialNodes = [
     id: 'a0',
     type: 'attributeType',
     position: { x: 500, y: 5 },
-    data: { label: 'id' },
+    data: { label: 'id',
+            nodeType: 'INT',
+            isPrimaryKey: false,
+            bgColor: "#ffffff" },
   },
 ]

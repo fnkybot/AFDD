@@ -32,16 +32,23 @@ class SQLController extends Controller
             $sql = "CREATE TABLE {$table['name']} (\n";
 
             $columns = [];
+            $foreignKeys = [];
             $primaryKeys = [];
 
             foreach ($table['columns'] as $column) {
                 $colDef = "{$column['name']} {$column['type']}";
+
+                // Ensure primary keys are NOT NULL
                 if ($column['primary'] ?? false) {
+                    $colDef .= " NOT NULL";
                     $primaryKeys[] = $column['name'];
                 }
+
+                // Collect foreign key constraints separately
                 if (!empty($column['foreign_key'])) {
-                    $colDef .= " REFERENCES {$column['references']}";
+                    $foreignKeys[] = "FOREIGN KEY ({$column['name']}) REFERENCES {$column['references']}";
                 }
+
                 $columns[] = $colDef;
             }
 
@@ -50,12 +57,16 @@ class SQLController extends Controller
                 $columns[] = "PRIMARY KEY (" . implode(", ", $primaryKeys) . ")";
             }
 
+            // Append foreign key constraints
+            $columns = array_merge($columns, $foreignKeys);
+
             $sql .= implode(",\n", $columns) . "\n);";
             $sqlStatements[] = $sql;
         }
 
         return implode("\n\n", $sqlStatements);
     }
+
 
     /**
      * API endpoint to convert PDM to SQL.

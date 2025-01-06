@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps } from 'vue';
+
 import { Position, Handle, useVueFlow, useNode } from '@vue-flow/core';
 
 const props = defineProps(['id']);

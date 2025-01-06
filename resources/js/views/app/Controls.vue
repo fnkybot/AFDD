@@ -80,8 +80,10 @@ function onAddEntityNode() {
   const newNode = {
     id: `e${id}`,
     type: `entityType`,
-    label: ``,
-    bgColor: `#ffffff`,
+    data: {
+      label: `Entity`,
+      bgColor: `#ffffff`,
+    },
     position: { x: Math.random() * dimensions.value.width, y: Math.random() * dimensions.value.height },
   }
 
@@ -94,8 +96,12 @@ function onAddAttributeNode() {
   const newNode = {
     id: `a${id}`,
     type: `attributeType`,
-    label: ``,
-    bgColor: `#ffffff`,
+    data: {
+      label: `id`,
+      nodeType: `INT`,
+      isPrimaryKey: false,
+      bgColor: `#ffffff`
+    },
     position: { x: Math.random() * dimensions.value.width, y: Math.random() * dimensions.value.height },
   }
 
@@ -171,7 +177,7 @@ body,
 }
 
 .vue-flow__panel {
-    background-color:#2d3748;
+    background-color:#303e44;
     padding:10px;
     border-radius:8px;
     box-shadow:0 0 10px #00000080
@@ -198,7 +204,7 @@ body,
 }
 
 .vue-flow__panel button:hover {
-    background-color:#2563eb;
+    background-color:#069fba;
     transition:background-color .2s
 }
 
