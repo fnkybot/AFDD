@@ -18,17 +18,17 @@ import LayoutBackendMegaMenu from "@/layouts/variations/BackendMegaMenu.vue";
 import LayoutBackendSidebarMiniNav from "@/layouts/variations/BackendSidebarMiniNav.vue";
 
 
-import "@/../scss/oneui/themes/flat.scss";
+
 // Main Stylesheet
 import "@/../scss/main.scss";
 
 // All color themes are included and available by default
 // Feel free to comment out any of them if you won't use them in your project
-// import "@/../scss/oneui/themes/amethyst.scss";
-// import "@/../scss/oneui/themes/city.scss";
-
-// import "@/../scss/oneui/themes/modern.scss";
-// import "@/../scss/oneui/themes/smooth.scss";
+import "@/../scss/oneui/themes/amethyst.scss";
+import "@/../scss/oneui/themes/city.scss";
+import "@/../scss/oneui/themes/flat.scss";
+import "@/../scss/oneui/themes/modern.scss";
+import "@/../scss/oneui/themes/smooth.scss";
 
 // Template components
 import BaseBlock from "@/components/BaseBlock.vue";
