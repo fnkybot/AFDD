@@ -83,8 +83,9 @@ const submit = () => {
             <div class="text-center mb-5">
               <h1 class="fw-black mb-2">Forgot Password</h1>
               <p class="fw-medium text-muted">
-                No problem! Just let us know your email and we will email you a
-                password reset link.
+                <span class="text-danger">This module is currently unavailable!</span> Sorry for that... Working on it.
+                <!-- No problem! Just let us know your email and we will email you a
+                password reset link. -->
               </p>
             </div>
             <!-- END Header -->
@@ -123,11 +124,20 @@ const submit = () => {
                     </div>
                   </div>
                   <div class="mb-4">
-                    <button
+                    <!-- <button
                       type="submit"
                       class="btn w-100 btn-alt-primary"
                       :class="{ 'opacity-25': form.processing }"
                       :disabled="form.processing"
+                    >
+                      Email password reset link
+                      <i class="fa fa-fw fa-arrow-right ms-1 opacity-50"></i>
+                    </button> -->
+                    <button
+                      type="submit"
+                      class="btn w-100 btn-alt-primary"
+                      :class="{ 'opacity-25': form.processing }"
+                      :disabled="true"
                     >
                       Email password reset link
                       <i class="fa fa-fw fa-arrow-right ms-1 opacity-50"></i>

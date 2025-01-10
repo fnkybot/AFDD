@@ -16,6 +16,9 @@ class PDMController extends Controller
 {
     /**
      * Display the user's profile form.
+     *
+     * @param Request $reguest
+     * @return Response
      */
     public function edit(Request $request): Response
     {
@@ -37,23 +40,20 @@ class PDMController extends Controller
         return strtoupper(str_replace(' ', '_', $name));
     }
 
+
     public function uploadERD(Request $request)
     {
         $erdData = null;
 
         if ($request->hasFile('erdFile')) {
-            // Obsługa przesłania pliku JSON
             $request->validate([
                 'erdFile' => 'required|file|mimes:json',
             ]);
 
-            // Zapisz plik tymczasowo
             $path = $request->file('erdFile')->store('temp');
 
-            // Wczytaj dane z pliku
             $erdData = json_decode(Storage::get($path), true);
 
-            // Usuń plik tymczasowy
             Storage::delete($path);
 
             if (!$erdData) {
@@ -63,10 +63,8 @@ class PDMController extends Controller
             return response()->json(['error' => 'No valid ERD data provided.'], 400);
         }
 
-        // Przetwarzanie ERD na PDM
         $pdmData = $this->buildPDM($erdData);
 
-        // Konwersja do VueFlow JSON
         $vueFlowData = $this->generateVueFlowJSON($pdmData);
 
         return response()->json([

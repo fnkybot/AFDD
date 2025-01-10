@@ -8,6 +8,9 @@ class SQLController extends Controller
 {
     /**
      * Render the SQL generation page.
+     *
+     * @param Request $reguest
+     * @return Response
      */
     public function edit(Request $request)
     {

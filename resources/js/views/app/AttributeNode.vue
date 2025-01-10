@@ -7,32 +7,6 @@ const props = defineProps(['label', 'id']);
 const instance = useVueFlow()
 const node = instance.findNode(props.id)
 
-const handleConnectable = (node, connectedEdges) => {
-  // only allow connections if the node has less than 3 connections
-  return connectedEdges.length < 1
-}
-
-// watch(() => props.label, (newLabel) => {
-//   localLabel.value = newLabel;
-// });
-
-// function onSomeEvent(newLabel) {
-//   const node = instance.findNode(props.id)
-//   if (node) {
-//     node.data = {
-//       ...node.data,
-//       label: newLabel,
-//     };
-//   } else {
-//     console.error("Node not found!");
-//   }
-// }
-
-// function updateLabel(value) {
-//   localLabel.value = value;
-//   onSomeEvent(value);
-// }
-
 const handlePositions = [
   Position.Top,
   Position.Bottom,

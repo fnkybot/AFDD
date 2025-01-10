@@ -10,7 +10,7 @@ const store = useTemplateStore();
 
   <div>
     <!-- Hero -->
-    <div id="one-vue-hero" class="bg-body-extra-light">
+    <div id="hero" class="bg-body-extra-light">
       <div class="content content-full">
         <div class="row g-0 justify-content-center text-center">
           <div class="col-md-10 pt-7 pb-9">
@@ -35,7 +35,7 @@ const store = useTemplateStore();
                   <i class="fa fa-fw fa-desktop opacity-50 me-1"></i> Start Designing
                 </Link>
                 <Link
-                href="/about"
+                href="#about"
                 class="btn btn-secondary py-2 px-3 m-1"
                 v-click-ripple
                 >
@@ -49,7 +49,7 @@ const store = useTemplateStore();
     </div>
 
     <!-- Hero After -->
-    <div id="one-vue-hero-after" class="bg-body-light">
+    <div id="about" class="bg-body-light">
       <div class="content content-full">
         <div class="px-lg-8 text-center">
           <BaseBlock
@@ -107,7 +107,7 @@ const store = useTemplateStore();
       </div>
     </div>
     <!-- Call To Action -->
-    <div id="one-vue-call-to-action" class="bg-body-extra-light">
+    <div id="cta" class="bg-body-extra-light">
       <div class="content content-full">
         <div class="pt-5">
           <div class="row mb-5">
@@ -130,7 +130,7 @@ const store = useTemplateStore();
                   <i class="fa fa-fw fa-desktop opacity-50 me-1"></i> Start Designing
                 </Link>
                 <Link
-                href="/about"
+                href="#about"
                 class="btn btn-secondary py-2 px-3 m-1"
                 v-click-ripple
                 >
