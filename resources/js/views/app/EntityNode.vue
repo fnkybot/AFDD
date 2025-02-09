@@ -2,7 +2,6 @@
 import { Position, Handle, useVueFlow } from '@vue-flow/core';
 
 const props = defineProps(['label', 'id']);
-
 const instance = useVueFlow()
 const node = instance.findNode(props.id)
 

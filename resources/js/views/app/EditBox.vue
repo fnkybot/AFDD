@@ -1,16 +1,14 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import { useVueFlow, Panel } from '@vue-flow/core';
 
 const { onNodeClick, onEdgeClick, setNodes } = useVueFlow();
 
-// Zmienna przechowująca dane węzła
 const label = ref('');
 const bgColor = ref('#ffffff');
-const isPrimaryKey = ref(false); // Checkbox dla opcji bool
-const nodeType = ref('VARCHAR(255)'); // Typ węzła, inicjalizacja jako 'Text'
+const isPrimaryKey = ref(false);
+const nodeType = ref('VARCHAR(255)');
 
-// Funkcja do zaktualizowania węzła
 const handleUpdate = () => {
   if (selectedNode.value) {
     setNodes((nodes) =>
@@ -20,10 +18,10 @@ const handleUpdate = () => {
               ...node,
               data: {
                 ...node.data,
-                label: label.value, // Aktualizacja labela
-                isPrimaryKey: isPrimaryKey.value, // Aktualizacja checkboxa
-                bgColor: bgColor.value, // Aktualizacja koloru
-                nodeType: nodeType.value, // Aktualizacja typu węzła
+                label: label.value,
+                isPrimaryKey: isPrimaryKey.value,
+                bgColor: bgColor.value,
+                nodeType: nodeType.value,
               },
             }
           : node
@@ -32,21 +30,18 @@ const handleUpdate = () => {
   }
 };
 
-// Zmienna do przechowywania aktualnie wybranego węzła
 const selectedNode = ref(null);
 
-// Nasłuchiwanie kliknięcia na węzeł za pomocą `useVueFlow`
 onNodeClick(({ node }) => {
   if (node) {
     selectedNode.value = node;
     label.value = node.data?.label || '';
-    isPrimaryKey.value = node.data?.isPrimaryKey || false; // Ustawienie stanu checkboxa
+    isPrimaryKey.value = node.data?.isPrimaryKey || false;
     bgColor.value = node.data?.bgColor || '#ffffff';
-    nodeType.value = node.data?.nodeType || 'VARCHAR(255)'; // Pobranie typu węzła
+    nodeType.value = node.data?.nodeType || 'VARCHAR(255)';
   }
 });
 
-// Resetuj wybrany węzeł przy kliknięciu na krawędź
 onEdgeClick(({ edge }) => {
   if (edge && selectedNode.value) {
     selectedNode.value = null;
@@ -71,7 +66,6 @@ onEdgeClick(({ edge }) => {
       <input class="form-check-input"  id="isPrimaryKey" type="checkbox" v-model="isPrimaryKey" @change="handleUpdate" />
     </div>
 
-    <!-- Warunkowe wyświetlanie typu węzła -->
     <div class="field" v-if="selectedNode?.type === 'attributeType'">
       <label>Type:</label>
       <div>

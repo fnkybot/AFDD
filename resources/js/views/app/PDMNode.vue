@@ -3,9 +3,6 @@
 import { Position, Handle, useVueFlow, useNode } from '@vue-flow/core';
 
 const props = defineProps(['id']);
-
-//const { id, label, data } = useNode(props.id);
-
 const instance = useVueFlow();
 const node = instance.findNode(props.id);
 

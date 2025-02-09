@@ -3,10 +3,7 @@ import { ref, computed, onBeforeUnmount } from 'vue'
 import { VueFlow, useVueFlow } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
 import { ControlButton, Controls, } from '@vue-flow/controls'
-import EditBox from './EditBox.vue'
 import { MiniMap } from '@vue-flow/minimap'
-// import { initialPDMNodes } from './initial-elements.js'
-import initialPDMNodes from './initial-elements.json'
 
 import Icon from './Icon.vue'
 
@@ -33,17 +30,14 @@ const saveJSONToFile = () => {
   const blob = new Blob([dataStr], { type: "application/json" });
   const url = URL.createObjectURL(blob);
 
-  // Utwórz tymczasowy element <a>, aby pobrać plik
   const a = document.createElement("a");
   a.href = url;
   a.download = "pdm_tables.json";
   a.click();
 
-  // Zwolnij pamięć zajmowaną przez URL
   URL.revokeObjectURL(url);
 };
 
-// Funkcja do obsługi importu pliku
 async function handleFileUpload(event) {
   const file = event.target.files[0];
 
@@ -55,7 +49,6 @@ async function handleFileUpload(event) {
   const formData = new FormData();
   formData.append("erdFile", file);
 
-  // Zmienna loading (jeśli jeszcze nie istnieje)
   loading.value = true;
 
   try {
@@ -67,7 +60,7 @@ async function handleFileUpload(event) {
 
     if (response.status === 200 && response.data) {
 
-      updateVueFlow(response.data.vueFlowData); // Funkcja aktualizująca Vue Flow
+      updateVueFlow(response.data.vueFlowData);
       tables.value = response.data.pdmData;
     } else {
       console.error("Bad response:", response);
@@ -84,20 +77,15 @@ async function handleFileUpload(event) {
 }
 
 
-// Aktualizacja VueFlow
 function updateVueFlow(pdmData) {
   nodes.value = pdmData.nodes;
   edges.value = pdmData.edges || [];
   setNodes(pdmData.nodes);
 }
 
-// our dark mode toggle flag
 const dark = ref(false)
 
 import PDMNode from './PDMNode.vue';
-
-import SaveRestoreControls from './Controls.vue'
-
 
 onInit((vueFlowInstance) => {
   // instance is the same as the return of `useVueFlow`
@@ -105,11 +93,9 @@ onInit((vueFlowInstance) => {
 
 })
 
-
 onNodeDragStop(({ event, nodes, node }) => {
   console.log('Node Drag Stop', { event, nodes, node })
 })
-
 
 /**
  * Resets the current viewport transformation (zoom & pan)
@@ -124,11 +110,6 @@ function resetTransform() {
  function logToObject() {
   console.log(toObject())
 }
-
-function toggleDarkMode() {
-  dark.value = !dark.value
-}
-
 
 function isActive(path) {
   return window.location.pathname === path;}
@@ -223,11 +204,6 @@ function isActive(path) {
         <ControlButton title="Shuffle Node Positions" @click="updatePos">
           <Icon name="update" />
         </ControlButton>
-
-        <!-- <ControlButton title="Toggle Dark Mode" @click="toggleDarkMode">
-          <Icon v-if="dark" name="sun" />
-          <Icon v-else name="moon" />
-        </ControlButton> -->
 
         <ControlButton title="Log `toObject`" @click="logToObject">
           <Icon name="log" />

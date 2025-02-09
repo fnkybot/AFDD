@@ -15,8 +15,8 @@ export const useDiagramStore = defineStore("diagram", {
         position: { x: 500, y: 5 },
         data: { label: 'id' },
       },
-    ], // Lista węzłów
-    edges: [], // Lista krawędzi
+    ],
+    edges: [],
   }),
   actions: {
     addNode(node) {

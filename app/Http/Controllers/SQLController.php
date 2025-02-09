@@ -72,7 +72,10 @@ class SQLController extends Controller
 
 
     /**
-     * API endpoint to convert PDM to SQL.
+     * API endpoint to convert Physical Data Model (PDM) to SQL script.
+     *
+     * @param Request $request
+     * @return Response
      */
     public function convertToSQL(Request $request)
     {

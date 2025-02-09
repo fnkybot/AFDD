@@ -28,7 +28,7 @@ const store = useTemplateStore();
               <slot name="content-left">
                 <a
                   class="fw-semibold"
-                  href="https://pixelcave.com/products/oneui-vue-edition"
+                  href="https://afdd.ovh"
                   >{{ store.app.name + " " + store.app.version }}</a
                 >
                 &copy; {{ store.app.copyright }}

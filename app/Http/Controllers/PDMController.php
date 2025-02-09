@@ -36,11 +36,15 @@ class PDMController extends Controller
      */
     private function normalizeName(string $name): string
     {
-        // Zmiana na wielkie litery i zamiana spacji na podłogi
         return strtoupper(str_replace(' ', '_', $name));
     }
 
-
+    /**
+     * Handle the upload of an Entity-Relationship Diagram (ERD).
+     *
+     * @param Request $request
+     * @return Response
+     */
     public function uploadERD(Request $request)
     {
         $erdData = null;
@@ -74,7 +78,10 @@ class PDMController extends Controller
     }
 
     /**
-     * Build Physical Data Model (PDM) from nodes and edges.
+     * Build Physical Data Model (PDM) from project data containing nodes and edges.
+     *
+     * @param array $projectData
+     * @return array
      */
     private function buildPDM(array $projectData)
     {
@@ -82,7 +89,7 @@ class PDMController extends Controller
         $edges = $projectData['edges'];
         $tables = [];
 
-        // Tworzenie tabel dla encji
+        // tables to entities
         foreach ($nodes as $node) {
             if ($node['type'] === 'entityType') {
                 $tableName = $this->normalizeName($node['data']['label']);
@@ -93,7 +100,7 @@ class PDMController extends Controller
             }
         }
 
-        // Przypisywanie atrybutów do tabel
+        // atributes to tables
         foreach ($nodes as $node) {
             if ($node['type'] === 'attributeType') {
 
@@ -108,26 +115,26 @@ class PDMController extends Controller
 
                 \Log::info('Processing attribute:', $attribute);
 
-                // Znajdź tabelę, do której należy ten atrybut
+                // search table with attribute
                 foreach ($edges as $edge) {
 
                     \Log::info('Processing edge:', $edge);
 
-                    if ($edge['target'] === $node['id'] || $edge['source'] === $node['id']) { // Atrybut jest połączony z encją
+                    if ($edge['target'] === $node['id'] || $edge['source'] === $node['id']) {
                         $relatedNodeId = $edge['target'] === $node['id'] ? $edge['source'] : $edge['target'];
                         $relatedNode = collect($nodes)->firstWhere('id', $relatedNodeId);
 
                         if ($relatedNode && $relatedNode['type'] === 'entityType') {
                             $tableName = $this->normalizeName($relatedNode['data']['label']);
 
-                            // Upewnij się, że tabela istnieje w $tables
+                            // check if exist
                             if (!isset($tables[$tableName])) {
                                 $tables[$tableName] = ['name' => $tableName, 'columns' => []];
                             }
 
-                            // Dodaj atrybut do kolumn tabeli
-                            if ($attribute['primary']) array_unshift($tables[$tableName]['columns'], $attribute); // Dodaj PK na początek
-                            else $tables[$tableName]['columns'][] = $attribute; // Dodaj normalną kolumnę na koniec
+                            // add attribute to table column
+                            if ($attribute['primary']) array_unshift($tables[$tableName]['columns'], $attribute);
+                            else $tables[$tableName]['columns'][] = $attribute;
 
                         }
                     }
@@ -135,12 +142,12 @@ class PDMController extends Controller
             }
         }
 
-        // Tworzenie tabel relacji dla wiele-do-wielu oraz dodawanie kluczy obcych
+        // tables for complex relationship and foregein keys
         foreach ($nodes as $node) {
             if ($node['type'] === 'relationshipType') {
                 $relationshipName = $this->normalizeName($node['data']['label']);
 
-                // Znajdź encje połączone przez relację
+                // Search entities connected on relationship
                 $connectedEntities = [];
                 foreach ($edges as $edge) {
                     if ($edge['source'] === $node['id'] || $edge['target'] === $node['id']) {
@@ -151,12 +158,12 @@ class PDMController extends Controller
                     }
                 }
 
-                // Jeśli relacja łączy dokładnie dwie encje
+                // If relationship ship 2 entities
                 if (count($connectedEntities) === 2) {
                     $entityA = $connectedEntities[0];
                     $entityB = $connectedEntities[1];
 
-                    // Dodanie kluczy obcych do tabeli dla wiele-do-wielu
+                    // Add foregein keys on M:M relationshop
                     $tables[$relationshipName] = [
                         'name' => $relationshipName,
                         'columns' => [
@@ -180,7 +187,7 @@ class PDMController extends Controller
             }
         }
 
-        // Dodanie kluczy obcych dla relacji jeden-do-wielu (1:N)
+        // Add foregein keys on 1:1 relationship
         foreach ($edges as $edge) {
             if ($edge['label'] === '1' || $edge['label'] === 'N') {
                 $sourceNode = collect($nodes)->firstWhere('id', $edge['source']);
@@ -219,7 +226,10 @@ class PDMController extends Controller
     }
 
     /**
-     * Generate VueFlow-compatible JSON from PDM.
+     * Generate VueFlow-compatible JSON from Physical Data Model (PDM) tables.
+     *
+     * @param array $tables
+     * @return array
      */
     private function generateVueFlowJSON(array $tables): array
     {
@@ -230,7 +240,7 @@ class PDMController extends Controller
         $y = 100;
 
         foreach ($tables as $table) {
-            // Generowanie pól (fields) na podstawie kolumn tabeli
+            // Generate fields based on table columns
             $fields = [];
             foreach ($table['columns'] as $column) {
                 $fields[] = [
@@ -239,9 +249,9 @@ class PDMController extends Controller
                     'keyType' => $column['primary'] ? 'PK' : ($column['foreign_key'] ?? false ? 'FK' : '')
                 ];
 
-                // Dodaj krawędzie dla kluczy obcych
+                // Add edges for foregin keys
                 if (isset($column['foreign_key']) && $column['foreign_key'] === true) {
-                    $referencedTable = explode('(', $column['references'])[0]; // Pobierz nazwę tabeli
+                    $referencedTable = explode('(', $column['references'])[0]; // Get table name
                     $edges[] = [
                         'id' => $table['name'] . '_to_' . $referencedTable,
                         'source' => $table['name'],
@@ -252,7 +262,7 @@ class PDMController extends Controller
                 }
             }
 
-            // Dodaj tabelę jako węzeł
+            // Add table as nod
             $nodes[] = [
                 'id' => $table['name'],
                 'type' => 'PDMNode',

@@ -114,13 +114,13 @@ store.mainContent({ mode: "boxed" });
         >
           <!-- Color Themes -->
           <button
-            @click="store.setColorTheme({ theme: '' })"
+            @click="store.setColorTheme({ theme: 'flat' })"
             type="button"
             class="dropdown-item d-flex align-items-center justify-content-between fw-medium"
-            :class="{ active: store.settings.colorTheme === '' }"
+            :class="{ active: store.settings.colorTheme === 'flat' }"
           >
             <span>Default</span>
-            <i class="fa fa-circle text-default"></i>
+            <i class="fa fa-circle text-flat"></i>
           </button>
           <button
             @click="store.setColorTheme({ theme: 'amethyst' })"
@@ -141,13 +141,13 @@ store.mainContent({ mode: "boxed" });
             <i class="fa fa-circle text-city"></i>
           </button>
           <button
-            @click="store.setColorTheme({ theme: 'flat' })"
+            @click="store.setColorTheme({ theme: '' })"
             type="button"
             class="dropdown-item d-flex align-items-center justify-content-between fw-medium"
-            :class="{ active: store.settings.colorTheme === 'flat' }"
+            :class="{ active: store.settings.colorTheme === '' }"
           >
-            <span>Flat</span>
-            <i class="fa fa-circle text-flat"></i>
+            <span>Blue</span>
+            <i class="fa fa-circle text-default"></i>
           </button>
           <button
             @click="store.setColorTheme({ theme: 'modern' })"

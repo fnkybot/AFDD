@@ -4,13 +4,9 @@ import { useVueFlow, Panel } from '@vue-flow/core'
 
 const { onEdgeClick, onNodeClick, setEdges, nodes } = useVueFlow()
 
-// Zmienna do przechowywania wybranej opcji dla krawędzi
 const selectedOption = ref('1')
-
-// Zmienna do przechowywania aktualnie wybranej krawędzi
 const selectedEdge = ref(null)
 
-// Funkcja do aktualizacji krawędzi
 const handleUpdate = () => {
   if (selectedEdge.value) {
     setEdges((edges) =>
@@ -18,7 +14,7 @@ const handleUpdate = () => {
         edge.id === selectedEdge.value.id
           ? {
               ...edge,
-              label: selectedOption.value, // Aktualizacja etykiety bezpośrednio na krawędzi
+              label: selectedOption.value,
             }
           : edge
       )
@@ -26,39 +22,32 @@ const handleUpdate = () => {
   }
 }
 
-// Nasłuchiwanie kliknięć na nodach i odznaczanie krawędzi w razie potrzeby
 onNodeClick(({ node }) => {
   if (node && selectedEdge.value) selectedEdge.value = null
 })
 
-// Nasłuchiwanie kliknięć na krawędziach
 onEdgeClick(({ edge }) => {
   if (edge) {
-    // Pobierz identyfikatory nodów źródłowego i docelowego
     const sourceNodeId = edge.source
     const targetNodeId = edge.target
 
-    // Pobierz listę nodów z Vue Flow
     const allNodes = nodes.value
-    console.log(allNodes)
-    // Znajdź nody źródłowy i docelowy
+
     const sourceNode = allNodes.find((node) => node.id === sourceNodeId)
     const targetNode = allNodes.find((node) => node.id === targetNodeId)
 
-    // Sprawdź, czy nody mają określone typy
     if (
       (sourceNode?.type === 'entityType' && targetNode?.type === 'relationshipType') ||
       (sourceNode?.type === 'relationshipType' && targetNode?.type === 'entityType')
     ) {
-      // Jeśli warunek spełniony, pokaż panel edycji
       selectedEdge.value = edge
-      selectedOption.value = edge.label || '1' // Inicjalizacja selectedOption z edge.label
+      selectedOption.value = edge.label || '1'
     } else {
-      // Jeśli warunek nie jest spełniony, ukryj panel edycji
       selectedEdge.value = null
     }
   }
 })
+
 </script>
 
 <template>

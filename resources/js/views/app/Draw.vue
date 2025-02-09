@@ -17,10 +17,8 @@ import Icon from './Icon.vue'
  * 3. the internal state of the VueFlow instance (like `nodes`, `edges`, `viewport`, etc)
  */
 const { onInit, onNodeDragStop, onConnect, addEdges, setEdges, updateEdge, setViewport, toObject, onEdgesChange, onNodesChange } = useVueFlow()
-const bgColor = ref('#eeeeee')
 const defaultEdgeOptions = {
-  type: 'step', // Twoja domyślna klasa
-  // class: 'default-edge-class', // Twoja domyślna klasa
+  type: 'step',
 }
 
 const nodes = ref(initialNodes)
@@ -42,15 +40,6 @@ function onEdgeUpdateEnd(edge) {
 function onEdgeUpdate({ edge, connection }) {
   updateEdge(edge, connection)
 }
-
-
-
-function redirectToPDM() {
-  const diagramData = { nodes: nodes, edges: edges, };
-  diagramStore.setDiagramData(diagramData);
-  window.location.href = "/pdm";
-}
-
 
 onEdgesChange((changes) => {
   changes.forEach((change) => {
@@ -76,14 +65,12 @@ onNodesChange((changes) => {
   });
 });
 
-
 // our dark mode toggle flag
 const dark = ref(false)
 
 import EntityNode from './EntityNode.vue';
 import AttributeNode from './AttributeNode.vue';
 import RelationshipNode from './RelationshipNode.vue';
-
 import SaveRestoreControls from './Controls.vue'
 
 /**
@@ -116,14 +103,14 @@ onNodeDragStop(({ event, nodes, node }) => {
  * You can add additional properties to your new edge (like a type or label) or block the creation altogether by not calling `addEdges`
  */
  onConnect((params) => {
-  // Sprawdź, czy już istnieje krawędź z tego samego źródła i uchwytu źródłowego
+  // check if edge exist FROM the same source and source handle
   const sourceExists = edges.value.some(
     (edge) =>
       edge.source === params.source &&
       edge.sourceHandle === params.sourceHandle
   );
 
-  // Sprawdź, czy już istnieje krawędź do tego samego celu i uchwytu docelowego
+  // check if edge exist TO the same source and source handle
   const targetExists = edges.value.some(
     (edge) =>
       edge.target === params.target &&
@@ -132,40 +119,16 @@ onNodeDragStop(({ event, nodes, node }) => {
 
   const sameExists = params.source === params.target
 
-
-  // Dodaj nowe połączenie tylko, jeśli nie istnieje już krawędź z tego uchwytu źródłowego ani do tego uchwytu docelowego
+  // add new connection only if exist edge not from the same source handle or to the same source handle
   if (!sourceExists && !targetExists && !sameExists) {
     const uniqueId = `edge-${Date.now()}-${Math.random()}-${params.source}-${params.sourceHandle}-${params.target}-${params.targetHandle}`;
-    // setEdges((eds) => [
-    //   ...eds,
-    //   { id: uniqueId, ...params, type: 'step' },
-    // ]);
     edges.value.push({ id: uniqueId, ...params, type: 'step' });
   } else {
-    // Informuj użytkownika o niemożności utworzenia połączenia
     console.log('More than 1 connection.');
   }
 
-
   return { nodes, edges, onConnect };
-
-  //this.edges.push({ ...connection, id: `e${connection.source}-${connection.target}` });
-  //addEdges(connection)
 })
-
-// onEdgesDelete((deletedEdges) => {
-//   deletedEdges.forEach((deletedEdge) => {
-//     const index = edges.value.findIndex((e) => e.id === deletedEdge.id);
-//     if (index !== -1) {
-//       edges.value.splice(index, 1);
-//       console.log('Deleted:', deletedEdge.id);
-//     }
-//   });
-// });
-
-// onNodeClick((node) => {
-//   setSelectedNode(node) // Ustawia kliknięty węzeł jako wybrany
-// })
 
 /**
  * To update a node or multiple nodes, you can
@@ -192,7 +155,6 @@ function updatePos() {
   console.log(toObject())
 }
 
-
 /**
  * Resets the current viewport transformation (zoom & pan)
  */
@@ -204,11 +166,8 @@ function toggleDarkMode() {
   dark.value = !dark.value
 }
 
- // Reaktywna wersja flowData
- const flowData = computed(() => JSON.stringify({ nodes: nodes.value, edges: edges.value }, null, 2));
-
-// Tekst wyświetlany w polu
-const displayFlowData = ref(flowData.value);
+// reactive flowData
+const flowData = computed(() => JSON.stringify({ nodes: nodes.value, edges: edges.value }, null, 2));
 
 function isActive(path) {
   return window.location.pathname === path;}
@@ -318,10 +277,6 @@ function isActive(path) {
       </Controls>
 
     </VueFlow>
-    <!-- <div class="json-display" style="height: 30vh; overflow: auto;  margin-top: 20px; padding: 10px;  border: 1px solid #ccc; border-radius: 8px;">
-    <h5>Flow Data:</h5>
-    <pre>{{ flowData }}</pre>
-    </div> -->
     <div class="block-rounded block"><div class="block-header block-header-default"><h3 class="block-title"> JSON Graph Code<!----></h3><!----></div><div class="block-content"><!----><pre><code class="hljs css">
       {{ flowData }}
     </code></pre></div><!----></div>

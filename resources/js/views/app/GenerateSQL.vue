@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import hljs from "highlight.js";
-import "highlight.js/styles/monokai.css"; // Możesz zmienić na inny styl, np. "github-dark.css"
+import "highlight.js/styles/monokai.css";
 
 const sqlCode = ref("");
 const errorMessage = ref("");
@@ -14,7 +14,7 @@ onMounted(() => {
 
 function isActive(path) {
   return window.location.pathname === path;}
-// Podświetlanie składni SQL po renderowaniu
+
 const highlightSQL = () => {
   setTimeout(() => {
     document.querySelectorAll("pre code").forEach((block) => {
@@ -23,7 +23,6 @@ const highlightSQL = () => {
   }, 100);
 };
 
-// Funkcja obsługująca plik JSON
 const handleFileUpload = async (event) => {
   const file = event.target.files[0];
 
@@ -32,14 +31,13 @@ const handleFileUpload = async (event) => {
     reader.onload = async () => {
       try {
         const jsonData = JSON.parse(reader.result);
-        // Pobierz token CSRF z meta tagu
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         const response = await fetch("/api/convert-to-sql", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "X-CSRF-TOKEN": csrfToken, // Dodaj token CSRF do nagłówków
+            "X-CSRF-TOKEN": csrfToken,
           },
           body: JSON.stringify(jsonData),
         });

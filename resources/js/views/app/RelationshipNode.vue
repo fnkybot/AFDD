@@ -3,10 +3,8 @@ import { defineProps} from 'vue';
 import { Position, Handle, useVueFlow } from '@vue-flow/core';
 
 const props = defineProps(['label', 'id']);
-
 const instance = useVueFlow()
 const node = instance.findNode(props.id)
-
 
 const handlePositions = [
   Position.Top,
@@ -14,6 +12,7 @@ const handlePositions = [
   Position.Left,
   Position.Right,
 ];
+
 </script>
 
 <template>

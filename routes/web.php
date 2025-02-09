@@ -31,11 +31,11 @@ Route::get('/dashboard', function () {
 // Dashboard - Profile (Authenticated)
 Route::middleware('auth')->group(function () {
     Route::get('/app', [AppController::class, 'edit'])->name('app.edit');
-    Route::get('/pdm', [PDMController::class, 'edit'])->name('pdm.edit'); // Strona do przekształcenia modelu
+    Route::get('/pdm', [PDMController::class, 'edit'])->name('pdm.edit');
     Route::post('/api/upload-erd', [PDMController::class, 'uploadERD'])->name('api.upload.erd');
 
-    Route::get('/sql', [SQLController::class, 'edit'])->name('generate.sql.code'); // Strona generowania SQL
-    Route::post('/api/convert-to-sql', [SQLController::class, 'convertToSQL'])->name('api.convert.to.sql'); // API do generowania SQL
+    Route::get('/sql', [SQLController::class, 'edit'])->name('generate.sql.code');
+    Route::post('/api/convert-to-sql', [SQLController::class, 'convertToSQL'])->name('api.convert.to.sql');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
